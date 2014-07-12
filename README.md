@@ -1,4 +1,6 @@
-HugeIoC
+Huge IoC
 =======
 
-IoC Simple, efficace pour php5
+IoC Simple et efficace pour php5
+
+(en cours)
