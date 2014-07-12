@@ -22,6 +22,10 @@ Installer avec composer
 * Création de conteneur spécifique possible (entends SuperIoC)
 * Cache : Array et Memcache
 
+## Pourquoi ?
+Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon souhait est de construire une librairie légère pour charger facilement et rapidement des instances à la mode Spring.
+
+
 ## Exemples
 ``` php
     // instanciation du conteneur par défaut
@@ -50,3 +54,21 @@ Installer avec composer
     $monContact = $c->getBean('contact');
 ```
 
+## Extensible 
+1. Créer vos factories : implémenter \Huge\IoC\FactoryIFactory
+2. Créer vos conteneurs qui chargent/définissent des beans
+```php
+    class MyCustomIoC extends \Huge\IoC\Container\SuperIoC{
+            public function __construct() {
+                parent::__construct();
+
+                $this->setDefinitions(array(
+                    array(
+                        'class' => '\Huge\IoC\Fixtures\Contact',
+                        'factory' => new ConstructFactory(array('DUPUIT', 'Pierre'))
+                    )
+                ));
+            }
+    }
+```
+3. Créer votre système de cache : implémenter Huge\Core\Cache\ICache
