@@ -33,7 +33,13 @@ abstract class SuperIoC implements IContainer {
      */
     private $cacheImpl;
     
+    /**
+     *
+     * @var string
+     */
     private $version;
+    
+    private $_logger;
 
     public function __construct($version = '') {
         $this->version = $version;
@@ -42,6 +48,7 @@ abstract class SuperIoC implements IContainer {
         $this->beans = array();
         $this->deps = array();
         $this->cacheImpl = null;
+        $this->_logger = \Logger::getLogger(__CLASS__);
     }
 
     /**
@@ -55,6 +62,7 @@ abstract class SuperIoC implements IContainer {
         if (isset($this->beans[$id])) {
             return;
         }
+        $this->_logger->trace('chargement du bean : '.$id);
 
         $this->beans[$id] = $definition['factory']->create($definition['class']);
         
@@ -88,7 +96,10 @@ abstract class SuperIoC implements IContainer {
      * @return mixed
      */
     public function getBean($id) {
+        $this->_logger->trace('récupération du bean : '.$id);
+        
         if ($this->_existsBeanDef($id)) {
+            $this->_logger->trace('existance du bean');
             $this->_loadBean($id);
             return $this->beans[$id];
         }else{
@@ -117,10 +128,12 @@ abstract class SuperIoC implements IContainer {
         if(!is_null($this->cacheImpl)){
             if($this->cacheImpl->contains($cacheKey)){
                 $this->deps = $this->cacheImpl->fetch($cacheKey);
+                $this->_logger->trace('récupération dans le cache des dépendances des beans du conteneur');
                 return;
             }
         }
         
+        $this->_logger->trace('recherche des dépendances des beans du conteneur');
         foreach ($this->definitions as &$definition) {
             $RClass = new \ReflectionClass($definition['class']);
             $props = $RClass->getProperties(\ReflectionProperty::IS_PRIVATE | \ReflectionProperty::IS_PROTECTED);
@@ -184,6 +197,7 @@ abstract class SuperIoC implements IContainer {
             $ioc->start();
         }
 
+        $this->_logger->trace('démarrage du conteneur');
         $this->_loadDeps();
         $this->_loadBeans(Scope::ON_LOAD);
     }
