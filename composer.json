@@ -1,11 +1,10 @@
 {
     "name": "huge/ioc",
-    "description" : "   ",
+    "description" : "IoC simple d'utilisation et efficace. HugeIoC permet de gérer et d'injecter des objets php très simple.",
     "require": {
         "php": ">=5.3.3",
         "apache/log4php": "2.3.0",
-        "phpunit/phpunit": "3.7.28",
-        "jan-swiecki/simple-annotation" : "0.2.1"
+        "phpunit/phpunit": "3.7.28"
     },
     "autoload": {
         "psr-0": {"Huge\\IoC\\": "src/main/php/"}
