@@ -16,6 +16,7 @@ Installer avec composer
 ```
 ## Fonctionnalités
 * Gestion de plusieurs conteneurs d'objets
+* Injection des instances via l'annotation @Autowired("ID_BEAN")
 * Gère l'instanciation on_load ou en mode lazy (sur demande)
 * Surcharge à souhait du comportement par défaut
 * Création de factory spécifique possible
