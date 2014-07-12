@@ -1,6 +1,17 @@
 {
     "name": "huge/ioc",
     "description" : "IoC simple d'utilisation et efficace. HugeIoC permet de gérer et d'injecter des objets php très simple.",
+    "license": "MIT",
+    "keywords": ["ioc", "bean", "singleton", "injector", "loader"],
+    "authors": [
+        {
+            "name": "Florent FREMONT",
+            "email": "ff.fremont.florent@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/ffremont/HugeIoC/issues"
+    },
     "require": {
         "php": ">=5.3.3",
         "apache/log4php": "2.3.0",
