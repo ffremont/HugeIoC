@@ -32,8 +32,11 @@ abstract class SuperIoC implements IContainer {
      * @var \Huge\Core\Cache\ICache
      */
     private $cacheImpl;
+    
+    private $version;
 
-    public function __construct() {
+    public function __construct($version = '') {
+        $this->version = $version;
         $this->definitions = array();
         $this->otherContainers = array();
         $this->beans = array();
@@ -110,7 +113,7 @@ abstract class SuperIoC implements IContainer {
      * @Cacheable
      */
     private function _loadDeps() {
-        $cacheKey = self::_whoAmI().'_loadDeps';
+        $cacheKey = self::_whoAmI().$this->version.'_loadDeps';
         if(!is_null($this->cacheImpl)){
             if($this->cacheImpl->contains($cacheKey)){
                 $this->deps = $this->cacheImpl->fetch($cacheKey);
@@ -148,7 +151,7 @@ abstract class SuperIoC implements IContainer {
      * @return array liste des ID des beans implémentant d'interface
      */
     public function findBeansByImpl($implClassName){
-        $cacheKey = self::_whoAmI().$implClassName.'findByImpl';
+        $cacheKey = self::_whoAmI().$this->version.$implClassName.'findByImpl';
         if(!is_null($this->cacheImpl)){
             if($this->cacheImpl->contains($cacheKey)){
                 return $this->cacheImpl->fetch($cacheKey);
@@ -192,8 +195,7 @@ abstract class SuperIoC implements IContainer {
     public function setDefinitions($definitions) {
         foreach ($definitions as $definition) {
             if (!isset($definition['id'])) {
-                $explodeClassName = explode('\\', $definition['class']);
-                $definition['id'] = count($explodeClassName) > 0 ? lcfirst($explodeClassName[count($explodeClassName) - 1]) : null;
+                $definition['id'] = $definition['class'];
             }
             $this->definitions[$definition['id']] = $definition;
         }

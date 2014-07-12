@@ -95,11 +95,11 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         $c->setOtherContainers(array($c2));
         $c->start();
         
-        $this->assertNotNull($c->getBean('contact'));
-        $this->assertNotNull($c->getBean('bigClient'));
-        $this->assertNotNull($c->getBean('bigClient')->getContact());
-        $this->assertEquals($c->getBean('bigClient')->getContact(), $c->getBean('contact'));
-        $this->assertEquals($c->getBean('bigClient')->getNumero(), '001');
+        $this->assertNotNull($c->getBean('\Huge\IoC\Fixtures\Contact'));
+        $this->assertNotNull($c->getBean('\Huge\IoC\Fixtures\BigClient'));
+        $this->assertNotNull($c->getBean('\Huge\IoC\Fixtures\BigClient')->getContact());
+        $this->assertEquals($c->getBean('\Huge\IoC\Fixtures\BigClient')->getContact(), $c->getBean('\Huge\IoC\Fixtures\Contact'));
+        $this->assertEquals($c->getBean('\Huge\IoC\Fixtures\BigClient')->getNumero(), '001');
     }
 
 }

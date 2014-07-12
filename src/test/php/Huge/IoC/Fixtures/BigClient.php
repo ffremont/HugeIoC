@@ -7,7 +7,7 @@ namespace Huge\IoC\Fixtures;
 class BigClient {
     
     /**
-     * @Autowired("contact")
+     * @Autowired("\Huge\IoC\Fixtures\Contact")
      * @var \Huge\IoC\Fixtures\Contact
      */
     private $contact;
