@@ -1,0 +1,13 @@
+{
+    "name": "huge/ioc",
+    "description" : "   ",
+    "require": {
+        "php": ">=5.3.3",
+        "apache/log4php": "2.3.0",
+        "phpunit/phpunit": "3.7.28",
+        "jan-swiecki/simple-annotation" : "0.2.1"
+    },
+    "autoload": {
+        "psr-0": {"Huge\\IoC\\": "src/main/php/"}
+    }
+}

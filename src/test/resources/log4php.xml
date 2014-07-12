@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns="http://logging.apache.org/log4php/">
+    <appender name="default" class="LoggerAppenderRollingFile">
+        <layout class="LoggerLayoutPattern">
+            <param name="conversionPattern" value="%date{Y-m-d H:i} - %logger %-5level : [%X{requestid}-%X{accesid}] %msg%n%ex" />
+        </layout>
+        <param name="file" value="target/trace.log" />
+        <param name="maxFileSize" value="1MB" />
+        <param name="maxBackupIndex" value="5" />
+    </appender>
+    <root>
+        <level value="trace" />
+        <appender_ref ref="default" />
+    </root>
+</configuration>
