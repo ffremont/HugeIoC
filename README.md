@@ -37,7 +37,7 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
         array(
             'id' => 'contact',
             'class' => '\Huge\IoC\Fixtures\Contact',
-            'factory' => new ConstructFactory(array('DUPUIT', 'Pierre'))
+            'factory' => \Huge\IoC\FactorySimpleFactory::getInstance() // retourne un singleton (optimisation)
         ),
         array(
             'id' => 'client',
