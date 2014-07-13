@@ -2,7 +2,7 @@
 
 namespace Huge\IoC\Container;
 
-use \Huge\Core\Cache\ICache;
+use Doctrine\Common\Cache\Cache;
 use Huge\IoC\Scope;
 
 abstract class SuperIoC implements IContainer {
@@ -29,7 +29,7 @@ abstract class SuperIoC implements IContainer {
 
     /**
      *
-     * @var \Huge\Core\Cache\ICache
+     * @var \Doctrine\Common\Cache\Cache
      */
     private $cacheImpl;
     
@@ -239,7 +239,7 @@ abstract class SuperIoC implements IContainer {
         return $this->cacheImpl;
     }
 
-    public function setCacheImpl(ICache $cacheImpl) {
+    public function setCacheImpl(Cache $cacheImpl) {
         $this->cacheImpl = $cacheImpl;
     }
 

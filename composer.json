@@ -15,7 +15,8 @@
     "require": {
         "php": ">=5.3.3",
         "apache/log4php": "2.3.0",
-        "phpunit/phpunit": "3.7.28"
+        "phpunit/phpunit": "3.7.28",
+        "doctrine/cache" : "v1.3.0"
     },
     "autoload": {
         "psr-0": {"Huge\\IoC\\": "src/main/php/"}
