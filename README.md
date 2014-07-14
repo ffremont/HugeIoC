@@ -21,7 +21,7 @@ Installer avec composer
 * Surcharge à souhait du comportement par défaut
 * Création de factory spécifique possible
 * Création de conteneur spécifique possible (entends SuperIoC)
-* Cache : Array et Memcache
+* Cache : basé sur doctrine cache
 
 ## Pourquoi ?
 Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon souhait est de construire une librairie légère pour charger facilement et rapidement des instances à la mode Spring.
