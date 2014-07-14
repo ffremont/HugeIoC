@@ -2,6 +2,7 @@
 
 namespace Huge\IoC\Container;
 
+use \Huge\IoC\Factory\IFactory;
 use Doctrine\Common\Cache\Cache;
 use Huge\IoC\Scope;
 
@@ -87,6 +88,7 @@ abstract class SuperIoC implements IContainer {
         if (isset($this->beans[$id])) {
             return;
         }
+        
         $this->_logger->trace('chargement du bean : ' . $id);
 
         $this->beans[$id] = $definition['factory']->create($definition['class']);
@@ -263,6 +265,11 @@ abstract class SuperIoC implements IContainer {
         foreach ($definitions as $definition) {
             if (!isset($definition['id'])) {
                 $definition['id'] = $definition['class'];
+            }
+            
+            if(!isset($definition['factory']) || !($definition['factory'] instanceof IFactory)){
+                $this->_logger->warn('Attribut factory du bean invalide : '.$definition['class']);
+                continue;
             }
             
             $RClass = new \ReflectionClass($definition['class']);
