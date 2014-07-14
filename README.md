@@ -15,11 +15,11 @@ Installer avec composer
     }
 ```
 ## Fonctionnalités
+* Définition d'un bean : @Component
 * Gestion de plusieurs conteneurs d'objets
 * Injection des instances via l'annotation @Autowired("ID_BEAN")
-* Gère l'instanciation on_load ou en mode lazy (sur demande)
-* Surcharge à souhait du comportement par défaut
-* Création de factory spécifique possible
+* Gère l'instanciation request ou lazy (sur demande)
+* Surcharge IFactory pour l'instanciation
 * Création de conteneur spécifique possible (entends SuperIoC)
 * Cache : basé sur doctrine cache
 
@@ -37,12 +37,12 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
     $c->setDefinitions(array(
         array(
             'id' => 'contact',
-            'class' => '\Huge\IoC\Fixtures\Contact',
-            'factory' => \Huge\IoC\FactorySimpleFactory::getInstance() // retourne un singleton (optimisation)
+            'class' => 'Huge\IoC\Fixtures\Contact',
+            'factory' => SimpleFactory::getInstance() // retourne un singleton (optimisation)
         ),
         array(
             'id' => 'client',
-            'class' => '\Huge\IoC\Fixtures\Client',
+            'class' => 'Huge\IoC\Fixtures\Client',
             'factory' => new ConstructFactory(array(new RefBean('contact', $c), '001'))
         )
     ));
@@ -56,7 +56,7 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
 ```
 
 ## Extensible 
-1. Créer vos factories : implémenter \Huge\IoC\FactoryIFactory
+1. Créer vos factories : implémenter Huge\IoC\FactoryIFactory
 2. Créer vos conteneurs qui chargent/définissent des beans
 ```php
     class MyCustomIoC extends \Huge\IoC\Container\SuperIoC{
@@ -65,11 +65,10 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
 
                 $this->setDefinitions(array(
                     array(
-                        'class' => '\Huge\IoC\Fixtures\Contact',
+                        'class' => 'Huge\IoC\Fixtures\Contact',
                         'factory' => new ConstructFactory(array('DUPUIT', 'Pierre'))
                     )
                 ));
             }
     }
 ```
-3. Créer votre système de cache : implémenter Huge\Core\Cache\ICache
