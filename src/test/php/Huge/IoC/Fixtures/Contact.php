@@ -2,7 +2,10 @@
 
 namespace Huge\IoC\Fixtures;
 
-class Contact {
+/**
+ * @Component
+ */
+class Contact  implements IWeb{
     
     private $nom;
     private $prenom;

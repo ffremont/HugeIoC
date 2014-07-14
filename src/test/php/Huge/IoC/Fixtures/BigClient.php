@@ -3,8 +3,9 @@
 namespace Huge\IoC\Fixtures;
 
 /**
+ * @Component
  */
-class BigClient {
+class BigClient{
     
     /**
      * @Autowired("\Huge\IoC\Fixtures\Contact")

@@ -2,7 +2,9 @@
 
 namespace Huge\IoC\Fixtures;
 
-
+/**
+ * @Component
+ */
 class Client {
     
     private $contact;

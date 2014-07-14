@@ -7,7 +7,15 @@ use Huge\IoC\Scope;
 
 abstract class SuperIoC implements IContainer {
 
+    /**
+     * Annotation pour injecter un bean dans une classe
+     */
     const REX_AUTOWIRED = '#@Autowired\("(.*)"\)#';
+    
+    /**
+     * Annotation pour définir une classe en tant que composant (bean)
+     */
+    const REX_COMPONENT = '#@Component#';
 
     /**
      * ID_BEAN =>  array( id, class, factory)
@@ -15,11 +23,24 @@ abstract class SuperIoC implements IContainer {
      * @var array
      */
     private $definitions;
+
+    /**
+     * Liste des container IoC
+     * 
+     * @var array
+     */
     private $otherContainers;
+
+    /**
+     * Liste des beans
+     * 
+     * @var array
+     */
     protected $beans;
 
     /**
-     *
+     * Liste des dépendances des beans
+     * 
      * @var array
      *  ID_BEAN => array(
      *      array(property,ref)
@@ -32,13 +53,17 @@ abstract class SuperIoC implements IContainer {
      * @var \Doctrine\Common\Cache\Cache
      */
     private $cacheImpl;
-    
+
     /**
      *
      * @var string
      */
     private $version;
-    
+
+    /**
+     *
+     * @var \Logger
+     */
     private $_logger;
 
     public function __construct($version = '') {
@@ -62,14 +87,14 @@ abstract class SuperIoC implements IContainer {
         if (isset($this->beans[$id])) {
             return;
         }
-        $this->_logger->trace('chargement du bean : '.$id);
+        $this->_logger->trace('chargement du bean : ' . $id);
 
         $this->beans[$id] = $definition['factory']->create($definition['class']);
-        
+
         $deps = isset($this->deps[$id]) ? $this->deps[$id] : array();
         foreach ($deps as $aDep) {
             $this->_loadBean($aDep['ref']);
-            $setter = 'set'.ucfirst($aDep['property']);
+            $setter = 'set' . ucfirst($aDep['property']);
             $this->beans[$id]->$setter($this->beans[$aDep['ref']]);
         }
     }
@@ -85,24 +110,32 @@ abstract class SuperIoC implements IContainer {
             }
         }
     }
-    
-    private function _existsBeanDef($id){
+
+    /**
+     * Retourne vrai si le bean est définit
+     * 
+     * @param string $id
+     * @return boolean
+     */
+    private function _existsBeanDef($id) {
         return isset($this->definitions[$id]);
     }
 
     /**
+     * Retourne l'objet stocké dans le conteneur. L'Identifiant peut être le nom de la classe ou celui donné explicitement lors de la définition du bean.
+     * S'il existe 2 beans ayant le même ID, le 1er sera retenu et retourné.
      * 
      * @param string $id
      * @return mixed
      */
     public function getBean($id) {
-        $this->_logger->trace('récupération du bean : '.$id);
-        
+        $this->_logger->trace('récupération du bean : ' . $id);
+
         if ($this->_existsBeanDef($id)) {
             $this->_logger->trace('existance du bean');
             $this->_loadBean($id);
             return $this->beans[$id];
-        }else{
+        } else {
             $bean = null;
             foreach ($this->otherContainers as $ioc) {
                 $bean = $ioc->getBean($id);
@@ -111,28 +144,31 @@ abstract class SuperIoC implements IContainer {
                 }
             }
             return $bean;
-        } 
+        }
 
         return null;
     }
-    
+
     private static function _whoAmI() {
         return get_called_class();
     }
 
     /**
+     * 
      * @Cacheable
      */
     private function _loadDeps() {
-        $cacheKey = self::_whoAmI().$this->version.'_loadDeps';
-        if(!is_null($this->cacheImpl)){
-            if($this->cacheImpl->contains($cacheKey)){
-                $this->deps = $this->cacheImpl->fetch($cacheKey);
-                $this->_logger->trace('récupération dans le cache des dépendances des beans du conteneur');
+        $cacheKey = self::_whoAmI() . $this->version . '_loadDeps';
+        if (!is_null($this->cacheImpl)) {
+                $deps = $this->cacheImpl->fetch($cacheKey);
+                if ($deps !== FALSE) {
+                    $this->deps = $deps;
+                    $this->_logger->trace('récupération dans le cache des dépendances des beans du conteneur');
                 return;
             }
+            
         }
-        
+
         $this->_logger->trace('recherche des dépendances des beans du conteneur');
         foreach ($this->definitions as &$definition) {
             $RClass = new \ReflectionClass($definition['class']);
@@ -151,38 +187,39 @@ abstract class SuperIoC implements IContainer {
 
             $this->deps[$definition['id']] = $depsOfBean;
         }
-        
-        if(!is_null($this->cacheImpl)){
+
+        if (!is_null($this->cacheImpl)) {
             $this->cacheImpl->save($cacheKey, $this->deps);
         }
     }
-    
+
     /**
      * Recherche la liste des beans qui implémentent l'interface
      * 
      * @param string $implClassName
      * @return array liste des ID des beans implémentant d'interface
      */
-    public function findBeansByImpl($implClassName){
-        $cacheKey = self::_whoAmI().$this->version.$implClassName.'findByImpl';
-        if(!is_null($this->cacheImpl)){
-            if($this->cacheImpl->contains($cacheKey)){
-                return $this->cacheImpl->fetch($cacheKey);
+    public function findBeansByImpl($implClassName) {
+        $cacheKey = self::_whoAmI() . $this->version . $implClassName . 'findByImpl';
+        if (!is_null($this->cacheImpl)) {
+            $beans = $this->cacheImpl->fetch($cacheKey);
+            if ($beans !== FALSE) {
+                return $beans;
             }
         }
-        
+
         $beans = array();
-        foreach($this->definitions as $definition){
+        foreach ($this->definitions as $definition) {
             $impls = class_implements($definition['class']);
-            if(in_array($implClassName, $impls)){
+            if (in_array($implClassName, $impls)) {
                 $beans[] = $definition['id'];
             }
         }
         foreach ($this->otherContainers as $ioc) {
             $beans = array_merge($beans, $ioc->findBeansByImpl($implClassName));
-        }        
-        
-        if(!is_null($this->cacheImpl)){
+        }
+
+        if (!is_null($this->cacheImpl)) {
             $this->cacheImpl->save($cacheKey, $beans);
         }
         return $beans;
@@ -199,19 +236,45 @@ abstract class SuperIoC implements IContainer {
 
         $this->_logger->trace('démarrage du conteneur');
         $this->_loadDeps();
-        $this->_loadBeans(Scope::ON_LOAD);
+        $this->_loadBeans(Scope::REQUEST);
     }
 
     public function getDefinitions() {
         return $this->definitions;
     }
 
+    /**
+     * Modifie les définitions des beans
+     * 
+     * @param array $definitions
+     * @return void
+     */
     public function setDefinitions($definitions) {
+        $cacheKey = self::_whoAmI() . $this->version . '_setDefinitions';
+        if (!is_null($this->cacheImpl)) {
+            $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
+            if ($cacheDefinitions !== FALSE){
+                $this->definitions = $cacheDefinitions;
+                $this->_logger->trace('récupération dans le cache des définitions du conteneur');
+                return;
+            }
+        }
+
         foreach ($definitions as $definition) {
             if (!isset($definition['id'])) {
                 $definition['id'] = $definition['class'];
             }
-            $this->definitions[$definition['id']] = $definition;
+            
+            $RClass = new \ReflectionClass($definition['class']);
+            if(preg_match(self::REX_COMPONENT, $RClass->getDocComment())){
+                $this->definitions[$definition['id']] = $definition;
+            }else{
+                $this->_logger->warn('Annotation @Component manquante pour la classe : '.$definition['class']);
+            }
+        }
+
+        if (!is_null($this->cacheImpl)) {
+            $this->cacheImpl->save($cacheKey, $this->definitions);
         }
     }
 

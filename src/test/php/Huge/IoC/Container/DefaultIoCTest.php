@@ -5,6 +5,7 @@ namespace Huge\IoC\Container;
 use Huge\IoC\RefBean;
 use Huge\IoC\Factory\SimpleFactory;
 use Huge\IoC\Factory\ConstructFactory;
+use Doctrine\Common\Cache\ArrayCache;
 
 use Huge\IoC\Fixtures\Contact;
 
@@ -12,6 +13,36 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
 
     public function __construct() {
         parent::__construct();
+    }
+    
+    /**
+     * @test
+     */
+    public function iocSimpleCacheOk() {
+        $c = new DefaultIoC();
+        $cache = new ArrayCache();
+        $c->setCacheImpl($cache);
+        $c->setDefinitions(array(
+            array(
+                'id' => 'contact',
+                'class' => '\Huge\IoC\Fixtures\Contact',
+                'factory' => SimpleFactory::getInstance()
+            )
+        ));
+        $c->start();
+        $this->assertNotNull($c->getBean('contact'));
+        
+        $cc = new DefaultIoC();
+        $cc->setCacheImpl($cache);
+        $cc->setDefinitions(array(
+            array(
+                'id' => 'contact',
+                'class' => '\Huge\IoC\Fixtures\Contact',
+                'factory' => SimpleFactory::getInstance()
+            )
+        ));
+        $cc->start();
+        $this->assertNotNull($cc->getBean('contact'));
     }
 
     /**
@@ -30,6 +61,25 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertNotNull($c->getBean('contact'));
         $this->assertEmpty($c->getBean('contact')->getNom());
+    }
+    
+    /**
+     * @test
+     */
+    public function iocFindBeansByImplOk() {
+        $c = new DefaultIoC();
+        $c->setDefinitions(array(
+            array(
+                'id' => 'contact',
+                'class' => '\Huge\IoC\Fixtures\Contact',
+                'factory' => SimpleFactory::getInstance()
+            )
+        ));
+        $c->start();
+        
+        $this->assertNotNull($c->getBean('contact'));
+        $res = $c->findBeansByImpl('Huge\IoC\Fixtures\IWeb');
+        $this->assertCount(1, $res);
     }
     
      /**

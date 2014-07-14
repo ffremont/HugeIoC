@@ -10,7 +10,7 @@ class ConstructFactory implements IFactory{
     private $scope;
     private $args;
  
-    public function __construct($args = array(), $scope = Scope::ON_LOAD) {
+    public function __construct($args = array(), $scope = Scope::LAZY) {
         $this->scope = $scope;
         $this->args = $args;
     }
