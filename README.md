@@ -1,8 +1,8 @@
 Huge IoC
 =======
 
-IoC Simple et efficace pour php5.
-Le principe de cette librairie est de gérer les instances des objets PHP à votre place. De cette façon vous n'êtes plus obligé de gérer vous-même dans vos constructeurs les instances en paramètres. Il est possible d'injecter via une annotation @Autowired.
+Framework IoC Simple et efficace pour php5.
+FLe principe de cette librairie est de gérer les instances des objets PHP à votre place. De cette façon vous n'êtes plus obligé de gérer vous-même dans vos constructeurs les instances en paramètres. Il est possible d'injecter via une annotation @Autowired.
 
 
 ##Installation
@@ -34,7 +34,7 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
     $c2 = new DefaultIoC();
     
     // définition des beans (instances), l'instanciation se fera dans la Factory
-    $c->setDefinitions(array(
+    $c->addDefinitions(array(
         array(
             'id' => 'contact',
             'class' => 'Huge\IoC\Fixtures\Contact',
@@ -63,7 +63,7 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
             public function __construct() {
                 parent::__construct();
 
-                $this->setDefinitions(array(
+                $this->addDefinitions(array(
                     array(
                         'class' => 'Huge\IoC\Fixtures\Contact',
                         'factory' => new ConstructFactory(array('DUPUIT', 'Pierre'))
