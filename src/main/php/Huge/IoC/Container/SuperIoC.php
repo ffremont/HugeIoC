@@ -133,6 +133,10 @@ abstract class SuperIoC implements IContainer {
     public function getBean($id) {
         $this->_logger->trace('récupération du bean : ' . $id);
 
+        if(isset($this->beans[$id])){
+            return $this->beans[$id];
+        }
+        
         if ($this->_existsBeanDef($id)) {
             $this->_logger->trace('existance du bean');
             $this->_loadBean($id);
@@ -237,6 +241,8 @@ abstract class SuperIoC implements IContainer {
         }
 
         $this->_logger->trace('démarrage du conteneur');
+        $this->beans[self::_whoAmI()] = $this;
+        
         $this->_loadDeps();
         $this->_loadBeans(Scope::REQUEST);
     }

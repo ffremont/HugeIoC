@@ -61,6 +61,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertNotNull($c->getBean('contact'));
         $this->assertEmpty($c->getBean('contact')->getNom());
+        $this->assertNotNull($c->getBean('Huge\IoC\Container\DefaultIoC'));
     }
     
     /**
