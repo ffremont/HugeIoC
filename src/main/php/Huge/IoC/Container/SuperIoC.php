@@ -155,7 +155,7 @@ abstract class SuperIoC implements IContainer {
         return null;
     }
 
-    private static function _whoAmI() {
+    public static function whoAmI() {
         return get_called_class();
     }
 
@@ -164,7 +164,7 @@ abstract class SuperIoC implements IContainer {
      * @Cacheable
      */
     private function _loadDeps() {
-        $cacheKey = self::_whoAmI() . $this->version . '_loadDeps';
+        $cacheKey = self::whoAmI() . $this->version . '_loadDeps';
         if (!is_null($this->cacheImpl)) {
                 $deps = $this->cacheImpl->fetch($cacheKey);
                 if ($deps !== FALSE) {
@@ -206,7 +206,7 @@ abstract class SuperIoC implements IContainer {
      * @return array liste des ID des beans implémentant d'interface
      */
     public function findBeansByImpl($implClassName) {
-        $cacheKey = self::_whoAmI() . $this->version . $implClassName . 'findByImpl';
+        $cacheKey = self::whoAmI() . $this->version . $implClassName . 'findByImpl';
         if (!is_null($this->cacheImpl)) {
             $beans = $this->cacheImpl->fetch($cacheKey);
             if ($beans !== FALSE) {
@@ -241,7 +241,7 @@ abstract class SuperIoC implements IContainer {
         }
 
         $this->_logger->trace('démarrage du conteneur');
-        $this->beans[self::_whoAmI()] = $this;
+        $this->beans[self::whoAmI()] = $this;
         
         $this->_loadDeps();
         $this->_loadBeans(Scope::REQUEST);
@@ -258,7 +258,7 @@ abstract class SuperIoC implements IContainer {
      * @return void
      */
     public function setDefinitions($definitions) {
-        $cacheKey = self::_whoAmI() . $this->version . '_setDefinitions';
+        $cacheKey = self::whoAmI() . $this->version . '_setDefinitions';
         if (!is_null($this->cacheImpl)) {
             $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
             if ($cacheDefinitions !== FALSE){
