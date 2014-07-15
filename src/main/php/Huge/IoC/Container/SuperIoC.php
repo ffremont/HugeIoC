@@ -206,6 +206,36 @@ abstract class SuperIoC implements IContainer {
     }
 
     /**
+     * Normalise les définitions
+     * 
+     * @param array $definitions
+     * @return array
+     */
+    private function _normalizeDefinitions($definitions) {
+        $list = array();
+        
+        foreach ($definitions as &$definition) {
+            if (!isset($definition['id'])) {
+                $definition['id'] = $definition['class'];
+            }
+
+            if (!isset($definition['factory']) || !($definition['factory'] instanceof IFactory)) {
+                $this->_logger->warn('Attribut factory du bean invalide : ' . $definition['class']);
+                continue;
+            }
+
+            $RClass = new \ReflectionClass($definition['class']);
+            if (preg_match(self::REX_COMPONENT, $RClass->getDocComment())) {
+                $list[$definition['id']] = $definition;
+            } else {
+                $this->_logger->warn('Annotation @Component manquante pour la classe : ' . $definition['class']);
+            }
+        }
+        
+        return $list;
+    }
+
+    /**
      * Recherche la liste des beans qui implémentent l'interface
      * 
      * @param string $implClassName
@@ -257,44 +287,23 @@ abstract class SuperIoC implements IContainer {
         return $this->definitions;
     }
 
-    /**
-     * Modifie les définitions des beans
-     * 
-     * @param array $definitions
-     * @return void
-     */
-    public function setDefinitions($definitions) {
-        $cacheKey = self::whoAmI() . md5(serialize($definitions)) . $this->version . '_setDefinitions';
+    public function addDefinitions($definitions) {
+        $cacheKey = self::whoAmI() . md5(serialize($definitions)) . $this->version . 'addDefinitions';
         if (!is_null($this->cacheImpl)) {
             $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
             if ($cacheDefinitions !== FALSE) {
-                $this->definitions = $cacheDefinitions;
-                $this->_logger->trace('récupération dans le cache des définitions du conteneur');
-                return;
+                $definitions = $cacheDefinitions;
+                $this->_logger->trace('récupération dans le cache des définitions à ajouter du conteneur');
             }
         }
 
-        foreach ($definitions as $definition) {
-            if (!isset($definition['id'])) {
-                $definition['id'] = $definition['class'];
-            }
-
-            if (!isset($definition['factory']) || !($definition['factory'] instanceof IFactory)) {
-                $this->_logger->warn('Attribut factory du bean invalide : ' . $definition['class']);
-                continue;
-            }
-
-            $RClass = new \ReflectionClass($definition['class']);
-            if (preg_match(self::REX_COMPONENT, $RClass->getDocComment())) {
-                $this->definitions[$definition['id']] = $definition;
-            } else {
-                $this->_logger->warn('Annotation @Component manquante pour la classe : ' . $definition['class']);
-            }
-        }
+        $definitions = $this->_normalizeDefinitions($definitions);
 
         if (!is_null($this->cacheImpl)) {
-            $this->cacheImpl->save($cacheKey, $this->definitions);
+            $this->cacheImpl->save($cacheKey, $definitions);
         }
+        
+        $this->definitions = array_merge($definitions, $this->definitions);
     }
 
     public function getOtherContainers() {

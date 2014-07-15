@@ -22,7 +22,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         $c = new DefaultIoC();
         $cache = new ArrayCache();
         $c->setCacheImpl($cache);
-        $c->setDefinitions(array(
+        $c->addDefinitions(array(
             array(
                 'id' => 'contact',
                 'class' => '\Huge\IoC\Fixtures\Contact',
@@ -34,7 +34,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         
         $cc = new DefaultIoC();
         $cc->setCacheImpl($cache);
-        $cc->setDefinitions(array(
+        $cc->addDefinitions(array(
             array(
                 'id' => 'contact',
                 'class' => '\Huge\IoC\Fixtures\Contact',
@@ -50,7 +50,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
      */
     public function iocSimpleOk() {
         $c = new DefaultIoC();
-        $c->setDefinitions(array(
+        $c->addDefinitions(array(
             array(
                 'id' => 'contact',
                 'class' => '\Huge\IoC\Fixtures\Contact',
@@ -69,7 +69,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
      */
     public function iocFindBeansByImplOk() {
         $c = new DefaultIoC();
-        $c->setDefinitions(array(
+        $c->addDefinitions(array(
             array(
                 'id' => 'contact',
                 'class' => '\Huge\IoC\Fixtures\Contact',
@@ -88,7 +88,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
      */
     public function iocSimpleArgsOk() {
         $c = new DefaultIoC();
-        $c->setDefinitions(array(
+        $c->addDefinitions(array(
             array(
                 'id' => 'contact',
                 'class' => '\Huge\IoC\Fixtures\Contact',
@@ -107,7 +107,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
      */
     public function iocSimpleRefOk() {
         $c = new DefaultIoC();
-        $c->setDefinitions(array(
+        $c->addDefinitions(array(
             array(
                 'id' => 'contact',
                 'class' => '\Huge\IoC\Fixtures\Contact',
@@ -134,7 +134,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
     public function iocAutowiredOk() {
         $c = new DefaultIoC();
         $c2 = new DefaultIoC();
-        $c->setDefinitions(array(
+        $c->addDefinitions(array(
             array(
                 'class' => '\Huge\IoC\Fixtures\Contact',
                 'factory' => SimpleFactory::getInstance()
