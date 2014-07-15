@@ -7,12 +7,12 @@ use Doctrine\Common\Cache\Cache;
 use Huge\IoC\Scope;
 
 abstract class SuperIoC implements IContainer {
-
     /**
      * Annotation pour injecter un bean dans une classe
      */
+
     const REX_AUTOWIRED = '#@Autowired\("(.*)"\)#';
-    
+
     /**
      * Annotation pour définir une classe en tant que composant (bean)
      */
@@ -69,7 +69,14 @@ abstract class SuperIoC implements IContainer {
 
     public function __construct($version = '') {
         $this->version = $version;
-        $this->definitions = array();
+        $class = self::whoAmI();
+        $this->definitions = array(
+            $class => array(
+                'id' => $class,
+                'class' => $class,
+                'factory' => null
+            )
+        );
         $this->otherContainers = array();
         $this->beans = array();
         $this->deps = array();
@@ -88,7 +95,7 @@ abstract class SuperIoC implements IContainer {
         if (isset($this->beans[$id])) {
             return;
         }
-        
+
         $this->_logger->trace('chargement du bean : ' . $id);
 
         $this->beans[$id] = $definition['factory']->create($definition['class']);
@@ -107,7 +114,7 @@ abstract class SuperIoC implements IContainer {
      */
     private function _loadBeans($scope) {
         foreach ($this->definitions as &$definition) {
-            if ($definition['factory']->getScope() === $scope) {
+            if (isset($definition['factory']) && ($definition['factory']->getScope() === $scope)) {
                 $this->_loadBean($definition);
             }
         }
@@ -133,10 +140,10 @@ abstract class SuperIoC implements IContainer {
     public function getBean($id) {
         $this->_logger->trace('récupération du bean : ' . $id);
 
-        if(isset($this->beans[$id])){
+        if (isset($this->beans[$id])) {
             return $this->beans[$id];
         }
-        
+
         if ($this->_existsBeanDef($id)) {
             $this->_logger->trace('existance du bean');
             $this->_loadBean($id);
@@ -164,15 +171,14 @@ abstract class SuperIoC implements IContainer {
      * @Cacheable
      */
     private function _loadDeps() {
-        $cacheKey = self::whoAmI() . $this->version . '_loadDeps';
+        $cacheKey = self::whoAmI() . md5(serialize($this->definitions)) . $this->version . '_loadDeps';
         if (!is_null($this->cacheImpl)) {
-                $deps = $this->cacheImpl->fetch($cacheKey);
-                if ($deps !== FALSE) {
-                    $this->deps = $deps;
-                    $this->_logger->trace('récupération dans le cache des dépendances des beans du conteneur');
+            $deps = $this->cacheImpl->fetch($cacheKey);
+            if ($deps !== FALSE) {
+                $this->deps = $deps;
+                $this->_logger->trace('récupération dans le cache des dépendances des beans du conteneur');
                 return;
             }
-            
         }
 
         $this->_logger->trace('recherche des dépendances des beans du conteneur');
@@ -242,7 +248,7 @@ abstract class SuperIoC implements IContainer {
 
         $this->_logger->trace('démarrage du conteneur');
         $this->beans[self::whoAmI()] = $this;
-        
+
         $this->_loadDeps();
         $this->_loadBeans(Scope::REQUEST);
     }
@@ -258,10 +264,10 @@ abstract class SuperIoC implements IContainer {
      * @return void
      */
     public function setDefinitions($definitions) {
-        $cacheKey = self::whoAmI() . $this->version . '_setDefinitions';
+        $cacheKey = self::whoAmI() . md5(serialize($definitions)) . $this->version . '_setDefinitions';
         if (!is_null($this->cacheImpl)) {
             $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
-            if ($cacheDefinitions !== FALSE){
+            if ($cacheDefinitions !== FALSE) {
                 $this->definitions = $cacheDefinitions;
                 $this->_logger->trace('récupération dans le cache des définitions du conteneur');
                 return;
@@ -272,17 +278,17 @@ abstract class SuperIoC implements IContainer {
             if (!isset($definition['id'])) {
                 $definition['id'] = $definition['class'];
             }
-            
-            if(!isset($definition['factory']) || !($definition['factory'] instanceof IFactory)){
-                $this->_logger->warn('Attribut factory du bean invalide : '.$definition['class']);
+
+            if (!isset($definition['factory']) || !($definition['factory'] instanceof IFactory)) {
+                $this->_logger->warn('Attribut factory du bean invalide : ' . $definition['class']);
                 continue;
             }
-            
+
             $RClass = new \ReflectionClass($definition['class']);
-            if(preg_match(self::REX_COMPONENT, $RClass->getDocComment())){
+            if (preg_match(self::REX_COMPONENT, $RClass->getDocComment())) {
                 $this->definitions[$definition['id']] = $definition;
-            }else{
-                $this->_logger->warn('Annotation @Component manquante pour la classe : '.$definition['class']);
+            } else {
+                $this->_logger->warn('Annotation @Component manquante pour la classe : ' . $definition['class']);
             }
         }
 
