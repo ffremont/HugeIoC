@@ -2,6 +2,8 @@
 
 namespace Huge\IoC\Fixtures;
 
+use Huge\IoC\Annotations\Component;
+
 /**
  * @Component
  */

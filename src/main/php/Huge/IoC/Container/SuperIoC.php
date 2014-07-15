@@ -6,6 +6,9 @@ use \Huge\IoC\Factory\IFactory;
 use Doctrine\Common\Cache\Cache;
 use Huge\IoC\Scope;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+
 abstract class SuperIoC implements IContainer {
     /**
      * Annotation pour injecter un bean dans une classe
@@ -180,19 +183,19 @@ abstract class SuperIoC implements IContainer {
                 return;
             }
         }
-
         $this->_logger->trace('recherche des dépendances des beans du conteneur');
+        
+        $annotationReader = new AnnotationReader();
         foreach ($this->definitions as &$definition) {
             $RClass = new \ReflectionClass($definition['class']);
             $props = $RClass->getProperties(\ReflectionProperty::IS_PRIVATE | \ReflectionProperty::IS_PROTECTED);
             $depsOfBean = array();
             foreach ($props as $prop) {
-                $matches = array();
-                preg_match(self::REX_AUTOWIRED, $prop->getDocComment(), $matches);
-                if (count($matches) >= 2) {
+                $annotation = $annotationReader->getPropertyAnnotation($prop, 'Huge\IoC\Annotations\Autowired');
+                if (!is_null($annotation) && !empty($annotation->value)) {
                     $depsOfBean[] = array(
                         'property' => $prop->getName(),
-                        'ref' => $matches[1]
+                        'ref' => $annotation->value
                     );
                 }
             }
@@ -214,6 +217,7 @@ abstract class SuperIoC implements IContainer {
     private function _normalizeDefinitions($definitions) {
         $list = array();
         
+        $annotationReader = new AnnotationReader();
         foreach ($definitions as &$definition) {
             if (!isset($definition['id'])) {
                 $definition['id'] = $definition['class'];
@@ -225,9 +229,9 @@ abstract class SuperIoC implements IContainer {
             }
 
             $RClass = new \ReflectionClass($definition['class']);
-            if (preg_match(self::REX_COMPONENT, $RClass->getDocComment())) {
+            if($annotationReader->getClassAnnotation($RClass, 'Huge\IoC\Annotations\Component') !== null){
                 $list[$definition['id']] = $definition;
-            } else {
+            }else{
                 $this->_logger->warn('Annotation @Component manquante pour la classe : ' . $definition['class']);
             }
         }

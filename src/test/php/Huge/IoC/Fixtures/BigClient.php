@@ -2,6 +2,9 @@
 
 namespace Huge\IoC\Fixtures;
 
+use Huge\IoC\Annotations\Component;
+use Huge\IoC\Annotations\Autowired;
+
 /**
  * @Component
  */
