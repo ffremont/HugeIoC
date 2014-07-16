@@ -2,7 +2,7 @@ Huge IoC
 =======
 
 Framework IoC Simple et efficace pour php5.
-FLe principe de cette librairie est de gérer les instances des objets PHP à votre place. De cette façon vous n'êtes plus obligé de gérer vous-même dans vos constructeurs les instances en paramètres. Il est possible d'injecter via une annotation @Autowired.
+Le principe de cette librairie est de gérer les instances des objets PHP à votre place. De cette façon vous n'êtes plus obligé de gérer vous-même dans vos constructeurs les instances en paramètres. Il est possible d'injecter via une annotation @Autowired.
 
 
 ##Installation
@@ -22,6 +22,7 @@ Installer avec composer
 * Surcharge IFactory pour l'instanciation
 * Création de conteneur spécifique possible (entends SuperIoC)
 * Cache : basé sur doctrine cache
+* Annotations basé sur doctrine annotations
 
 ## Pourquoi ?
 Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon souhait est de construire une librairie légère pour charger facilement et rapidement des instances à la mode Spring.
@@ -59,6 +60,8 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
 1. Créer vos factories : implémenter Huge\IoC\FactoryIFactory
 2. Créer vos conteneurs qui chargent/définissent des beans
 ```php
+    namespace MyApp;
+
     class MyCustomIoC extends \Huge\IoC\Container\SuperIoC{
             public function __construct() {
                 parent::__construct();
@@ -70,5 +73,35 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
                     )
                 ));
             }
+    }
+```
+3. Injecter dans vos beans d'autres beans
+```php
+    use Huge\IoC\Annotations\Component;
+    use Huge\IoC\Annotations\Autowired;
+    
+    /**
+    * @Component
+    */
+    class MyController{
+        /**
+        * @Autowired("MyApp\MyCustomIoC")
+        */
+        private $ioc;
+        
+        /**
+        * @Autowired("Huge\IoC\Fixtures\Contact");
+        */
+        private $daoContact
+        
+        /**
+        * Nécessaire au conteneur pour setter la valeur
+        */
+        public function setIoc($ioc){
+            $this->ioc = $ioc;
+        }
+        public function setDaoContact($contact){
+            $this->daoContact = $contact;
+        }
     }
 ```
