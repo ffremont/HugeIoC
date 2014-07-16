@@ -19,7 +19,7 @@ Installer avec composer
   $loader = require(__DIR__.'/../../../vendor/autoload.php');
   
   // nécessaire charger les annotations
-  \Huge\IoC\SuperIoC::registerLoader(array($loader, 'loadClass'));
+  \Huge\IoC\Container\SuperIoC::registerLoader(array($loader, 'loadClass'));
 ```
 
 ## Fonctionnalités
