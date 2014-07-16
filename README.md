@@ -55,7 +55,7 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
             'factory' => new ConstructFactory(array(new RefBean('contact', $c), '001'))
         )
     ));
-    // possibilité de charger d'autres conteneur, dans le cas où l'on travail de façon modulaire
+    // possibilité de charger d'autres conteneurs, dans le cas où l'on travail de façon modulaire
     $c->setOtherContainers(array($c2));
     
     // init du conteneur
@@ -71,8 +71,12 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
     namespace MyApp;
 
     class MyCustomIoC extends \Huge\IoC\Container\SuperIoC{
-            public function __construct() {
-                parent::__construct();
+            /**
+            * @param $version permet de construire des clefs de cache cloisonnées par version 
+            * (très très pratique pour les déploiements en production)
+            */
+            public function __construct($version) {
+                parent::__construct($version);
 
                 $this->addDefinitions(array(
                     array(
