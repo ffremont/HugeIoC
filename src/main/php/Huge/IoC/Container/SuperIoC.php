@@ -52,7 +52,7 @@ abstract class SuperIoC implements IContainer {
      *
      * @var string
      */
-    private $version;
+    protected $version;
 
     /**
      *
@@ -330,6 +330,14 @@ abstract class SuperIoC implements IContainer {
 
     public function setCacheImpl(Cache $cacheImpl) {
         $this->cacheImpl = $cacheImpl;
+    }
+    
+    public function getVersion() {
+        return $this->version;
+    }
+
+    public function setVersion($version) {
+        $this->version = $version;
     }
 
 }
