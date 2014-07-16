@@ -14,6 +14,14 @@ Installer avec composer
         }
     }
 ```
+
+```php
+  $loader = require(__DIR__.'/../../../vendor/autoload.php');
+  
+  // nécessaire charger les annotations
+  \Huge\IoC\SuperIoC::registerLoader(array($loader, 'loadClass'));
+```
+
 ## Fonctionnalités
 * Définition d'un bean : @Component
 * Gestion de plusieurs conteneurs d'objets
@@ -28,7 +36,7 @@ Installer avec composer
 Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon souhait est de construire une librairie légère pour charger facilement et rapidement des instances à la mode Spring.
 
 
-## Exemples
+## Exemples de configuration
 ``` php
     // instanciation du conteneur par défaut
     $c = new DefaultIoC();
