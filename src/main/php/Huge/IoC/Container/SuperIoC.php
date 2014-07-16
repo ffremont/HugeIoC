@@ -10,16 +10,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
 abstract class SuperIoC implements IContainer {
-    /**
-     * Annotation pour injecter un bean dans une classe
-     */
-
-    const REX_AUTOWIRED = '#@Autowired\("(.*)"\)#';
-
-    /**
-     * Annotation pour définir une classe en tant que composant (bean)
-     */
-    const REX_COMPONENT = '#@Component#';
 
     /**
      * ID_BEAN =>  array( id, class, factory)
@@ -85,6 +75,10 @@ abstract class SuperIoC implements IContainer {
         $this->deps = array();
         $this->cacheImpl = null;
         $this->_logger = \Logger::getLogger(__CLASS__);
+    }
+    
+    public static function registerLoader($call){
+        \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader($call);
     }
 
     /**
