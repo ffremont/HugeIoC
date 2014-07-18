@@ -84,11 +84,11 @@ abstract class SuperIoC implements IContainer {
      * @param string $id
      * @return array|null
      */
-    private function _getDefinitionById($id) {
+    public final function getDefinitionById($id) {
         $definition = isset($this->definitions[$id]) ? $this->definitions[$id] : null;
         if (is_null($definition)) {
             foreach ($this->otherContainers as $ioc) {
-                $def = $ioc->_getDefinitionById($id);
+                $def = $ioc->getDefinitionById($id);
                 if (!is_null($def)) {
                     $definition = $def;
                     break;
@@ -116,19 +116,19 @@ abstract class SuperIoC implements IContainer {
 
         $deps = isset($this->deps[$id]) ? $this->deps[$id] : array();
         foreach ($deps as $aDep) {
-            $def = $this->_getDefinitionById($aDep['ref']);
+            $def = $this->getDefinitionById($aDep['ref']);
             if (is_null($def)) {
                 $implBeans = $this->findBeansByImpl($aDep['ref']);
                 $countImpl = count($implBeans);
                 if ($countImpl === 1) {
-                    $def = $this->_getDefinitionById($implBeans[0]);
+                    $def = $this->getDefinitionById($implBeans[0]);
                 } else if ($countImpl > 1) {
                     throw new InvalidBeanException($id, 'Multi implémentation pour une interface : '.$aDep['ref'], 1);
                 } else {
                     $subClasses = $this->findBeansBySubClass($aDep['ref']);
                     $countSubClasses = count($subClasses);
                     if ($countSubClasses === 1) {
-                        $def = $this->_getDefinitionById($subClasses[0]);
+                        $def = $this->getDefinitionById($subClasses[0]);
                         
                     } else if ($countSubClasses > 1) {
                         throw new InvalidBeanException($id, 'Multi sous classe pour une interface : '.$aDep['ref'], 1);
@@ -156,16 +156,6 @@ abstract class SuperIoC implements IContainer {
                 $this->_loadBean($definition);
             }
         }
-    }
-
-    /**
-     * Retourne vrai si le bean est définit
-     * 
-     * @param string $id
-     * @return boolean
-     */
-    private function _existsBeanDef($id) {
-        return isset($this->definitions[$id]);
     }
 
     /**
@@ -244,7 +234,7 @@ abstract class SuperIoC implements IContainer {
      * 
      * @return string
      */
-    public static function whoAmI() {
+    public final static function whoAmI() {
         return get_called_class();
     }
 
@@ -253,7 +243,7 @@ abstract class SuperIoC implements IContainer {
      * 
      * @param array $call
      */
-    public static function registerLoader($call) {
+    public final static function registerLoader($call) {
         \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader($call);
     }
 
@@ -275,7 +265,7 @@ abstract class SuperIoC implements IContainer {
             return $this->beans[$id];
         }
 
-        $def = $this->_getDefinitionById($id);
+        $def = $this->getDefinitionById($id);
         if (is_null($def)) {
             $bean = null;
             foreach ($this->otherContainers as $ioc) {
