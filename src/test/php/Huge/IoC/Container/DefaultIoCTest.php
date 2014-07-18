@@ -44,6 +44,34 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         $cc->start();
         $this->assertNotNull($cc->getBean('contact'));
     }
+    
+     /**
+     * @test
+     */
+    public function iocOtherIoCOk() {
+        $c1 = new DefaultIoC();
+        // ioc contenant la classe qui va injecter une interface
+        $c1->addDefinitions(array(
+            array(
+                'class' => 'Huge\IoC\Fixtures\Personne',
+                'factory' => SimpleFactory::getInstance()
+            )
+        ));
+        $c2 = new DefaultIoC();
+        // ioc contenant l'impl. de l'interface
+        $c2->addDefinitions(array(
+            array(
+                'class' => '\Huge\IoC\Fixtures\Contact',
+                'factory' => SimpleFactory::getInstance()
+            )
+        ));
+        $c1->addOtherContainers(array($c2));
+        $c1->start();
+        
+        $this->assertNotNull($c1->getBean('Huge\IoC\Fixtures\Contact'));
+        $this->assertNotNull($c1->getBean('Huge\IoC\Fixtures\Personne'));
+        $this->assertNotNull($c1->getBean('Huge\IoC\Fixtures\Personne')->getImplIWeb());
+    }
 
     /**
      * @test
@@ -143,7 +171,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
                 'factory' => new ConstructFactory(array('001'))
             )
         ));
-        $c->setOtherContainers(array($c2));
+        $c->addOtherContainers(array($c2));
         $c->start();
         
         $this->assertNotNull($c->getBean('\Huge\IoC\Fixtures\Contact'));
