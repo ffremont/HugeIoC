@@ -26,6 +26,8 @@ Installer avec composer
 * Définition d'un bean : @Component
 * Gestion de plusieurs conteneurs d'objets
 * Injection des instances via l'annotation @Autowired("ID_BEAN")
+* Injection d'une implémentation via l'annotation @Autowired("INTERFACE")
+* Injection d'une sous classe via l'annotation @Autowired("CLASSE_PARENTE")
 * Gère l'instanciation request ou lazy (sur demande)
 * Surcharge IFactory pour l'instanciation
 * Création de conteneur spécifique possible (entends SuperIoC)
