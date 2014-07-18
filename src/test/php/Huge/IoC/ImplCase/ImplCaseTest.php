@@ -5,6 +5,7 @@ namespace Huge\IoC\ImplCase;
 use Huge\IoC\Container\DefaultIoC;
 use Huge\IoC\Factory\SimpleFactory;
 use Doctrine\Common\Cache\ArrayCache;
+use Huge\IoC\Exceptions\InvalidBeanException;
 
 class ImplCaseTest extends \PHPUnit_Framework_TestCase {
 
@@ -46,6 +47,36 @@ class ImplCaseTest extends \PHPUnit_Framework_TestCase {
             $this->assertNotNull($c->getBean('Huge\IoC\ImplCase\Data\DriverController')->getDriver());
             $this->assertEquals($c->getBean('Huge\IoC\ImplCase\Data\ImplDriver'), $c->getBean('Huge\IoC\ImplCase\Data\DriverController')->getDriver());
         }
+    }
+
+    /**
+     * @test
+     */
+    public function iocDoubleImplKo() {
+        $exception = false;
+
+        $c = new DefaultIoC();
+        $c->addDefinitions(array(
+            array(
+                'class' => 'Huge\IoC\ImplCase\Data\ImplDriver',
+                'factory' => SimpleFactory::getInstance()
+            ), array(
+                'class' => 'Huge\IoC\ImplCase\Data\ImplBisDriver',
+                'factory' => SimpleFactory::getInstance()
+            ), array(
+                'class' => 'Huge\IoC\ImplCase\Data\DriverController',
+                'factory' => SimpleFactory::getInstance()
+            )
+        ));
+        $c->start();
+
+        try {
+            $c->getBean('Huge\IoC\ImplCase\Data\DriverController'); // chargement lazy
+        } catch (InvalidBeanException $e) {
+            $exception = true;
+        }
+        
+        $this->assertTrue($exception);
     }
 
 }

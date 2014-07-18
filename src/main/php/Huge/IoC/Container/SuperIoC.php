@@ -2,11 +2,12 @@
 
 namespace Huge\IoC\Container;
 
-use \Huge\IoC\Factory\IFactory;
+use Huge\IoC\Factory\IFactory;
 use Doctrine\Common\Cache\Cache;
 use Huge\IoC\Scope;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Huge\IoC\Exceptions\InvalidBeanException;
 
 abstract class SuperIoC implements IContainer {
 
@@ -122,7 +123,7 @@ abstract class SuperIoC implements IContainer {
                 if ($countImpl === 1) {
                     $def = $this->_getDefinitionById($implBeans[0]);
                 } else if ($countImpl > 1) {
-                    throw new Exceptions\InvalidBeanException($id, 'Multi implémentation pour une interface : '.$aDep['ref'], 'MULTI_IMPL');
+                    throw new InvalidBeanException($id, 'Multi implémentation pour une interface : '.$aDep['ref'], 1);
                 } else {
                     $subClasses = $this->findBeansBySubClass($aDep['ref']);
                     $countSubClasses = count($subClasses);
@@ -130,7 +131,7 @@ abstract class SuperIoC implements IContainer {
                         $def = $this->_getDefinitionById($subClasses[0]);
                         
                     } else if ($countSubClasses > 1) {
-                        throw new Exceptions\InvalidBeanException($id, 'Multi sous classe pour une interface : '.$aDep['ref'], 'MULTI_IMPL');
+                        throw new InvalidBeanException($id, 'Multi sous classe pour une interface : '.$aDep['ref'], 1);
                     }
                 }
             }
@@ -261,7 +262,8 @@ abstract class SuperIoC implements IContainer {
      * S'il existe 2 beans ayant le même ID, le 1er sera retenu et retourné.
      * 
      * @param string $id
-     * @return mixed
+     * @return object|null
+     * @throws \Huge\IoC\Exceptions\InvalidBeanException s'il existe plusieurs implémentation d'une interface / sous classe à injecter
      */
     public final function getBean($id) {
         if ($this->_logger->isTraceEnabled()) {

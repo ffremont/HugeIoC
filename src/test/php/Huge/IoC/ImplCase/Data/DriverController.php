@@ -11,8 +11,8 @@ use Huge\IoC\Annotations\Autowired;
 class DriverController {
 
     /**
-     * @Autowired("Huge\IoC\ImplCase\Data\ImplDriver")
-     * @var \Huge\IoC\ImplCase\Data\ImplDriver
+     * @Autowired("Huge\IoC\ImplCase\Data\IDriver")
+     * @var \Huge\IoC\ImplCase\Data\IDriver
      */
     private $driver;
     
@@ -24,9 +24,11 @@ class DriverController {
         return $this->driver;
     }
 
-    public function setDriver(\Huge\IoC\ImplCase\Data\ImplDriver $driver) {
+    public function setDriver(\Huge\IoC\ImplCase\Data\IDriver $driver) {
         $this->driver = $driver;
     }
+
+
 
 }
 

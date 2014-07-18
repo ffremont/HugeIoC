@@ -5,6 +5,7 @@ namespace Huge\IoC\SubClassCase;
 use Huge\IoC\Container\DefaultIoC;
 use Huge\IoC\Factory\SimpleFactory;
 use Doctrine\Common\Cache\ArrayCache;
+use Huge\IoC\Exceptions\InvalidBeanException;
 
 class SubClassCaseTest extends \PHPUnit_Framework_TestCase {
 
@@ -46,6 +47,36 @@ class SubClassCaseTest extends \PHPUnit_Framework_TestCase {
             $this->assertNotNull($c->getBean('Huge\IoC\SubClassCase\Data\Controller')->getPerson());
             $this->assertEquals($c->getBean('Huge\IoC\SubClassCase\Data\Client'), $c->getBean('Huge\IoC\SubClassCase\Data\Controller')->getPerson());
         }
+    }
+    
+     /**
+     * @test
+     */
+    public function iocDoubleSubClassKo() {
+        $exception = false;
+
+        $c = new DefaultIoC();
+        $c->addDefinitions(array(
+            array(
+                'class' => 'Huge\IoC\SubClassCase\Data\Controller',
+                'factory' => SimpleFactory::getInstance()
+            ), array(
+                'class' => 'Huge\IoC\SubClassCase\Data\Client',
+                'factory' => SimpleFactory::getInstance()
+            ), array(
+                'class' => 'Huge\IoC\SubClassCase\Data\Contact',
+                'factory' => SimpleFactory::getInstance()
+            )
+        ));
+        $c->start();
+
+        try {
+            $c->getBean('Huge\IoC\SubClassCase\Data\Controller'); // chargement lazy
+        } catch (InvalidBeanException $e) {
+            $exception = true;
+        }
+        
+        $this->assertTrue($exception);
     }
 
 }
