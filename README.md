@@ -58,7 +58,7 @@ Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon s
         )
     ));
     // possibilité de charger d'autres conteneurs, dans le cas où l'on travail de façon modulaire
-    $c->setOtherContainers(array($c2));
+    $c->addOtherContainers(array($c2));
     
     // init du conteneur
     $c->start();
