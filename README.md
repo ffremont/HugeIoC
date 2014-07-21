@@ -35,7 +35,7 @@ Installer avec composer
 * Annotations basé sur doctrine annotations
 
 ## Pourquoi ?
-Rien, il n'existe rien sur les mécaniques IoC SIMPLE et FLEXIBLE en php5. Mon souhait est de construire une librairie légère pour charger facilement et rapidement des instances à la mode Spring.
+Pour aider les développeurs PHP à construire des applications rapidement et facilement.
 
 
 ## Exemples de configuration
