@@ -8,6 +8,7 @@ use Huge\IoC\Scope;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Huge\IoC\Exceptions\InvalidBeanException;
+use Huge\IoC\Utils\IocArray;
 
 abstract class SuperIoC implements IContainer {
 
@@ -304,7 +305,7 @@ abstract class SuperIoC implements IContainer {
         $beans = array();
         foreach ($this->definitions as $definition) {
             $impls = class_implements($definition['class']);
-            if (in_array($implClassName, $impls)) {
+            if (IocArray::in_array($implClassName, $impls)) {
                 $beans[] = $definition['id'];
             }
         }
