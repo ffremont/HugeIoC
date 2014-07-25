@@ -6,7 +6,7 @@ Le principe de cette librairie est de gérer les instances des objets PHP à vot
 
 
 ##Installation
-Installer avec composer
+* Installer avec composer
 ``` json
     {
         "require": {
@@ -14,6 +14,7 @@ Installer avec composer
         }
     }
 ```
+* Cache : https://github.com/doctrine/cache
 
 ```php
   $loader = require(__DIR__.'/../../../vendor/autoload.php');
@@ -132,3 +133,7 @@ Pour aider les développeurs PHP à construire des applications rapidement et fa
 * Annotations Doctrine
 * Framework basé sur Log4php
 
+## Limitations
+* Logger log4php
+* Annotations Doctrine
+* Basé sur Huge/IoC
