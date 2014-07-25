@@ -131,9 +131,4 @@ Pour aider les développeurs PHP à construire des applications rapidement et fa
 ## Limitations
 * Cache Doctrine
 * Annotations Doctrine
-* Framework basé sur Log4php
-
-## Limitations
 * Logger log4php
-* Annotations Doctrine
-* Basé sur Huge/IoC
