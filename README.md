@@ -67,6 +67,19 @@ Pour aider les développeurs PHP à construire des applications rapidement et fa
     $monContact = $c->getBean('contact');
 ```
 
+## Logger
+1. Implémentation du composant factory : Huge\IoC\Factory\ILogFactory
+```php
+$ioc = new DefaultIoC();
+$ioc->setLogger(new MyApp\Log4phpLoggerImpl('DefaultIoC'));
+$ioc->addDefinitions(array(
+    array(
+        'class' => 'MyApp\Log4phpFactoryImpl',
+        'factory' => SimpleFactory::getInstance() // retourne un singleton (optimisation)
+    )
+));
+```
+
 ## Extensible 
 1. Créer vos factories : implémenter Huge\IoC\FactoryIFactory
 2. Créer vos conteneurs qui chargent/définissent des beans
@@ -107,7 +120,13 @@ Pour aider les développeurs PHP à construire des applications rapidement et fa
         /**
         * @Autowired("Huge\IoC\Fixtures\Contact");
         */
-        private $daoContact
+        private $daoContact;
+        
+        /**
+         * @Autowired("Huge\IoC\Factory\ILogFactory")
+         * @var \Huge\IoC\Factory\ILogFactory
+         */
+        private $loggerFactory;
         
         /**
         * Nécessaire au conteneur pour setter la valeur
@@ -117,6 +136,14 @@ Pour aider les développeurs PHP à construire des applications rapidement et fa
         }
         public function setDaoContact($contact){
             $this->daoContact = $contact;
+        }
+        
+        public function getLoggerFactory() {
+            return $this->loggerFactory;
+        }
+    
+        public function setLoggerFactory(\Huge\IoC\Factory\ILogFactory $loggerFactory) {
+            $this->loggerFactory = $loggerFactory;
         }
     }
 ```
@@ -131,4 +158,4 @@ Pour aider les développeurs PHP à construire des applications rapidement et fa
 ## Limitations
 * Cache Doctrine
 * Annotations Doctrine
-* Logger log4php
+* Logger basé sur l'interface Psr\Log
