@@ -9,6 +9,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Huge\IoC\Exceptions\InvalidBeanException;
 use Huge\IoC\Utils\IocArray;
+use \Psr\Log\NullLogger;
 
 abstract class SuperIoC implements IContainer {
 
@@ -57,9 +58,9 @@ abstract class SuperIoC implements IContainer {
 
     /**
      *
-     * @var \Logger
+     * @var \Psr\Log\LoggerInterface
      */
-    private $_logger;
+    private $logger;
 
     public function __construct($version = '') {
         $this->version = $version;
@@ -75,7 +76,7 @@ abstract class SuperIoC implements IContainer {
         $this->beans = array();
         $this->deps = array();
         $this->cacheImpl = null;
-        $this->_logger = \Logger::getLogger(__CLASS__);
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -112,10 +113,7 @@ abstract class SuperIoC implements IContainer {
         if (isset($this->beans[$id])) {
             return;
         }
-
-        if($this->_logger->isTraceEnabled()){
-            $this->_logger->trace('chargement du bean : ' . $id);
-        }
+        
         $this->beans[$id] = $definition['factory']->create($definition['class']);
 
         $deps = isset($this->deps[$id]) ? $this->deps[$id] : array();
@@ -177,11 +175,11 @@ abstract class SuperIoC implements IContainer {
             $deps = $this->cacheImpl->fetch($cacheKey);
             if ($deps !== FALSE) {
                 $this->deps = $deps;
-                $this->_logger->trace('récupération dans le cache des dépendances des beans du conteneur');
+                $this->logger->debug('chargement depuis le cache des dépendances des beans');
                 return;
             }
         }
-        $this->_logger->trace('rafraichissement du cache : chargement des dépendances des beans du conteneur');
+        $this->logger->debug('rafraichissement du cache : dépendances des beans');
 
         $annotationReader = new AnnotationReader();
         foreach ($this->definitions as &$definition) {
@@ -223,7 +221,7 @@ abstract class SuperIoC implements IContainer {
             }
 
             if (!isset($definition['factory']) || !($definition['factory'] instanceof IFactory)) {
-                $this->_logger->warn('Factory du bean invalide : ' . $definition['class']);
+                $this->logger->warning('Factory du bean invalide : ' . $definition['class']);
                 continue;
             }
 
@@ -231,7 +229,7 @@ abstract class SuperIoC implements IContainer {
             if ($annotationReader->getClassAnnotation($RClass, 'Huge\IoC\Annotations\Component') !== null) {
                 $list[$definition['id']] = $definition;
             } else {
-                $this->_logger->warn('Annotation @Component manquante pour la classe : ' . $definition['class']);
+                $this->logger->warning('Annotation @Component manquante pour la classe : ' . $definition['class']);
             }
         }
 
@@ -265,9 +263,6 @@ abstract class SuperIoC implements IContainer {
      * @throws \Huge\IoC\Exceptions\InvalidBeanException s'il existe plusieurs implémentation d'une interface / sous classe à injecter
      */
     public final function getBean($id) {
-        if ($this->_logger->isTraceEnabled()) {
-            $this->_logger->trace('demande de récupération du bean : ' . $id);
-        }
         $id = trim($id, '\\');
 
         if (isset($this->beans[$id])) {
@@ -285,9 +280,6 @@ abstract class SuperIoC implements IContainer {
             }
             return $bean;
         } else {
-            if ($this->_logger->isTraceEnabled()) {
-                $this->_logger->trace('chargement du bean : ' . $id);
-            }
             $this->_loadBean($def);
             return $this->beans[$def['id']];
         }
@@ -368,7 +360,6 @@ abstract class SuperIoC implements IContainer {
             $this->otherContainers[$i]->start();
         }
 
-        $this->_logger->trace('démarrage du conteneur');
         $this->beans[self::whoAmI()] = $this;
 
         $this->_loadDeps();
@@ -385,7 +376,7 @@ abstract class SuperIoC implements IContainer {
             $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
             if ($cacheDefinitions !== FALSE) {
                 $definitions = $cacheDefinitions;
-                $this->_logger->trace('récupération dans le cache des définitions à ajouter du conteneur');
+                $this->logger->debug('récupération dans le cache des définitions à ajouter du conteneur');
             }
         }
 
@@ -436,6 +427,14 @@ abstract class SuperIoC implements IContainer {
 
     public function setVersion($version) {
         $this->version = $version;
+    }
+    
+    public function getLogger() {
+        return $this->logger;
+    }
+
+    public function setLogger(\Psr\Log\LoggerInterface $logger) {
+        $this->logger = $logger;
     }
 
 }

@@ -14,10 +14,13 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "apache/log4php": "2.3.0",
-        "phpunit/phpunit": "4.1.4",
+        "psr/log": "1.0.0",
         "doctrine/cache" : "v1.3.0",
         "doctrine/annotations": "v1.2.0"
+    },
+    "require-dev" : {
+        "apache/log4php": "2.3.0",
+        "phpunit/phpunit": "4.1.4"
     },
     "autoload": {
         "psr-0": {"Huge\\IoC\\": "src/main/php/"}
