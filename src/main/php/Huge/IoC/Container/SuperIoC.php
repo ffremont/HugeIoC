@@ -262,28 +262,45 @@ abstract class SuperIoC implements IContainer {
      * @return object|null
      * @throws \Huge\IoC\Exceptions\InvalidBeanException s'il existe plusieurs implémentation d'une interface / sous classe à injecter
      */
-    public final function getBean($id) {
+     public final function getBean($id) {
         $id = trim($id, '\\');
 
         if (isset($this->beans[$id])) {
             return $this->beans[$id];
         }
 
-        $def = $this->getDefinitionById($id);
+        $def = $this->getDefinitionById($id);        
         if ($def === null) {
             $bean = null;
             foreach ($this->otherContainers as $ioc) {
                 $bean = $ioc->getBean($id);
                 if ($bean !== null) {
-                    break;
+                    return $bean;
                 }
             }
-            return $bean;
         } else {
             $this->_loadBean($def);
             return $this->beans[$def['id']];
         }
 
+        // recherche du bean en tant qu'interface
+        $implBeans = $this->findBeansByImpl($id);
+        if(count($implBeans) === 1){
+            return $this->getBean($implBeans[0]);
+        }else{
+            $this->logger->warning('Double implémentation de "'.$id.'"');
+            return null;
+        }
+        
+        // recherche du bean en tant que classe parente
+        $subClassBeans = $this->findBeansBySubClass($id);
+        if(count($subClassBeans) === 1){
+            return $this->getBean($subClassBeans[0]);
+        }else{
+            $this->logger->warning('2 sous classe de "'.$id.'" sous définies');
+            return null;
+        }
+        
         return null;
     }
 
