@@ -27,10 +27,16 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
                 'id' => 'contact',
                 'class' => '\Huge\IoC\Fixtures\Contact',
                 'factory' => SimpleFactory::getInstance()
+            ),
+            array(
+                'id' => 'client',
+                'class' => '\Huge\IoC\Fixtures\Client',
+                'factory' =>  new ConstructFactory(array(new RefBean('contact', $c), '001'))
             )
         ));
         $c->start();
         $this->assertNotNull($c->getBean('contact'));
+        $this->assertNotNull($c->getBean('client'));
         
         $cc = new DefaultIoC();
         $cc->setCacheImpl($cache);
@@ -43,6 +49,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         ));
         $cc->start();
         $this->assertNotNull($cc->getBean('contact'));
+        $this->assertNull($cc->getBean('client'));
     }
     
      /**
