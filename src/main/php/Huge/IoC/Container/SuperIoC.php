@@ -409,6 +409,22 @@ abstract class SuperIoC implements IContainer {
     public function getOtherContainers() {
         return $this->otherContainers;
     }
+    
+    /**
+     * Retourne tous les conteneurs ioc
+     * 
+     * @return array
+     */
+    public function getAllOtherContainers(){
+        $containers = array();
+        
+        /* @var $ioc \Huge\IoC\Container\SuperIoC */
+        foreach($this->otherContainers as $ioc){
+            $containers = array_merge($containers, $ioc->getAllOtherContainer());
+        }
+        
+        return $containers;
+    }
 
     public function addOtherContainers($otherContainers) {
         $list = array();
