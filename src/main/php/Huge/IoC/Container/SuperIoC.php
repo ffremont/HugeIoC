@@ -170,7 +170,7 @@ abstract class SuperIoC implements IContainer {
      * @Cacheable
      */
     private function _loadDeps() {
-        $cacheKey = self::whoAmI() . spl_object_hash((object)$this->definitions) . $this->version . '_loadDeps';
+        $cacheKey = self::whoAmI() . md5(serialize(array_keys($this->definitions))) . $this->version . '_loadDeps';
         if ($this->cacheImpl !== null) {
             $deps = $this->cacheImpl->fetch($cacheKey);
             if ($deps !== FALSE) {
@@ -388,7 +388,7 @@ abstract class SuperIoC implements IContainer {
     }
 
     public final function addDefinitions($definitions) {
-        $cacheKey = self::whoAmI() . spl_object_hash((object)$definitions) . $this->version . 'addDefinitions';
+        $cacheKey = self::whoAmI() . md5(serialize(array_keys($definitions))) . $this->version . 'addDefinitions';
         if ($this->cacheImpl !== null) {
             $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
             if ($cacheDefinitions !== FALSE) {
