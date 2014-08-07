@@ -435,6 +435,7 @@ abstract class SuperIoC implements IContainer {
                 if ($this->cacheImpl !== null) {
                     $ioc->setCacheImpl($this->cacheImpl);
                 }
+                $ioc->setLogger($this->logger);
                 $list[] = $ioc;
             }
         }
