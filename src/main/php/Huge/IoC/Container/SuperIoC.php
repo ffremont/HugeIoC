@@ -420,7 +420,7 @@ abstract class SuperIoC implements IContainer {
         
         /* @var $ioc \Huge\IoC\Container\SuperIoC */
         foreach($this->otherContainers as $ioc){
-            $containers = array_merge($containers, $ioc->getAllOtherContainer());
+            $containers = array_merge($containers, $ioc->getAllOtherContainers());
         }
         
         return $containers;
