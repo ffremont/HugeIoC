@@ -12,13 +12,13 @@ abstract class Caller {
      */
     public static function instance($object, $funcName, $args = array()){
         switch (count($args)) {
-            case 0: $object->$funcName(); break;
-            case 1: $object->$funcName($args[0]); break;
-            case 2: $object->$funcName($args[0], $args[1]); break;
-            case 3: $object->$funcName($args[0], $args[1], $args[2]); break;
-            case 4: $object->$funcName($args[0], $args[1], $args[2], $args[3]); break;
-            case 5: $object->$funcName($args[0], $args[1], $args[2], $args[3], $args[4]); break;
-            default: call_user_func_array(array($object, $funcName), $args); break;
+            case 0: return $object->$funcName(); break;
+            case 1: return $object->$funcName($args[0]); break;
+            case 2: return $object->$funcName($args[0], $args[1]); break;
+            case 3: return $object->$funcName($args[0], $args[1], $args[2]); break;
+            case 4: return $object->$funcName($args[0], $args[1], $args[2], $args[3]); break;
+            case 5: return $object->$funcName($args[0], $args[1], $args[2], $args[3], $args[4]); break;
+            default: return call_user_func_array(array($object, $funcName), $args); break;
         }
     }
     
@@ -31,13 +31,13 @@ abstract class Caller {
      */
     public static function statiq($className, $funcName, $args = array()){
         switch (count($args)) {
-            case 0: $className::$funcName(); break;
-            case 1: $className::$funcName($args[0]); break;
-            case 2: $className::$funcName($args[0], $args[1]); break;
-            case 3: $className::$funcName($args[0], $args[1], $args[2]); break;
-            case 4: $className::$funcName($args[0], $args[1], $args[2], $args[3]); break;
-            case 5: $className::$funcName($args[0], $args[1], $args[2], $args[3], $args[4]); break;
-            default: call_user_func_array($className.'::'.$funcName, $args); break;
+            case 0: return $className::$funcName(); break;
+            case 1: return $className::$funcName($args[0]); break;
+            case 2: return $className::$funcName($args[0], $args[1]); break;
+            case 3: return $className::$funcName($args[0], $args[1], $args[2]); break;
+            case 4: return $className::$funcName($args[0], $args[1], $args[2], $args[3]); break;
+            case 5: return $className::$funcName($args[0], $args[1], $args[2], $args[3], $args[4]); break;
+            default: return call_user_func_array($className.'::'.$funcName, $args); break;
         }
     }
 }
