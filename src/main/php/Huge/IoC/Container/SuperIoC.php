@@ -490,6 +490,9 @@ abstract class SuperIoC implements IContainer {
     public function setLogger(\Psr\Log\LoggerInterface $logger) {
         $this->logger = $logger;
     }
-
+    
+    public function getName() {
+        return $this->name;
+    }
 }
 
