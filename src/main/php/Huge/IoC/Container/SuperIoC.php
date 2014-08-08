@@ -55,6 +55,13 @@ abstract class SuperIoC implements IContainer {
      * @var string
      */
     protected $version;
+    
+    /**
+     * Nom du composant
+     * 
+     * @var string
+     */
+    protected $name;
 
     /**
      *
@@ -62,7 +69,8 @@ abstract class SuperIoC implements IContainer {
      */
     private $logger;
 
-    public function __construct($version = '') {
+    public function __construct($name = '', $version = '') {
+        $this->name = $name;
         $this->version = $version;
         $class = self::whoAmI();
         $this->definitions = array(
@@ -87,6 +95,16 @@ abstract class SuperIoC implements IContainer {
      * @return array|null
      */
     public final function getDefinitionById($id) {
+        $cacheKey = self::whoAmI() . $this->name. $this->version .$id. __FUNCTION__;
+        if ($this->cacheImpl !== null) {
+            $def = $this->cacheImpl->fetch($cacheKey);
+            if ($def !== FALSE) {
+                $this->logger->debug('from cache : getDefinitionById');
+                return $def;
+            }
+        }
+        $this->logger->debug('refresh : getDefinitionById');
+        
         $definition = isset($this->definitions[$id]) ? $this->definitions[$id] : null;
         if ($definition === null) {
             $iocCount = count($this->otherContainers);
@@ -97,6 +115,10 @@ abstract class SuperIoC implements IContainer {
                     break;
                 }
             }
+        }
+        
+        if ($this->cacheImpl !== null) {
+            $this->cacheImpl->save($cacheKey, $definition);
         }
 
         return $definition;
@@ -169,7 +191,7 @@ abstract class SuperIoC implements IContainer {
      * Charge les dépendances (toutes les définitions)
      */
     private function _loadDeps() {
-        $cacheKey = self::whoAmI() . $this->version . __FUNCTION__;
+        $cacheKey = self::whoAmI() . $this->name. $this->version . __FUNCTION__;
         if ($this->cacheImpl !== null) {
             $deps = $this->cacheImpl->fetch($cacheKey);
             if ($deps !== FALSE) {
@@ -303,7 +325,7 @@ abstract class SuperIoC implements IContainer {
      * @return array liste des ID des beans implémentant d'interface
      */
     public final function findBeansByImpl($implClassName) {
-        $cacheKey = self::whoAmI() . $this->version . $implClassName . 'findByImpl';
+        $cacheKey = self::whoAmI() . $this->name. $this->version . $implClassName . 'findByImpl';
         if ($this->cacheImpl !== null) {
             $beans = $this->cacheImpl->fetch($cacheKey);
             if ($beans !== FALSE) {
@@ -333,7 +355,7 @@ abstract class SuperIoC implements IContainer {
      * @return array liste de identifiants des beans
      */
     public final function findBeansBySubClass($parentClass) {
-        $cacheKey = self::whoAmI() . $this->version . $parentClass . 'findBeansBySubClass';
+        $cacheKey = self::whoAmI() . $this->name. $this->version . $parentClass . 'findBeansBySubClass';
         if ($this->cacheImpl !== null) {
             $beans = $this->cacheImpl->fetch($cacheKey);
             if ($beans !== FALSE) {
@@ -384,7 +406,7 @@ abstract class SuperIoC implements IContainer {
     }
 
     public final function addDefinitions($definitions) {
-        $cacheKey = self::whoAmI() . md5(json_encode(array_keys($definitions))) . $this->version . __FUNCTION__;
+        $cacheKey = self::whoAmI() . md5(json_encode(array_keys($definitions))) . $this->name. $this->version . __FUNCTION__;
         if ($this->cacheImpl !== null) {
             $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
             if ($cacheDefinitions !== FALSE) {
@@ -433,9 +455,6 @@ abstract class SuperIoC implements IContainer {
         for($i=0; $i < $iocCount; $i++){
             $ioc = $otherContainers[$i];
             if ($ioc instanceof SuperIoC) {
-                if ($this->cacheImpl !== null) {
-                    $ioc->setCacheImpl($this->cacheImpl);
-                }
                 $ioc->setLogger($this->logger);
                 $list[] = $ioc;
             }

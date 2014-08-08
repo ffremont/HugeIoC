@@ -19,7 +19,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
      * @test
      */
     public function iocSimpleCacheOk() {
-        $c = new DefaultIoC();
+        $c = new DefaultIoC('a');
         $cache = new ArrayCache();
         $c->setCacheImpl($cache);
         $c->addDefinitions(array(
@@ -38,7 +38,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         $this->assertNotNull($c->getBean('contact'));
         $this->assertNotNull($c->getBean('client'));
         
-        $cc = new DefaultIoC();
+        $cc = new DefaultIoC('b');
         $cc->setCacheImpl($cache);
         $cc->addDefinitions(array(
             array(
