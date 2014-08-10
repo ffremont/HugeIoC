@@ -455,6 +455,7 @@ abstract class SuperIoC implements IContainer {
         for($i=0; $i < $iocCount; $i++){
             $ioc = $otherContainers[$i];
             if ($ioc instanceof SuperIoC) {
+                $ioc->setCacheImpl(null);
                 $ioc->setLogger($this->logger);
                 $list[] = $ioc;
             }
@@ -471,7 +472,7 @@ abstract class SuperIoC implements IContainer {
         return $this->cacheImpl;
     }
 
-    public function setCacheImpl(Cache $cacheImpl) {
+    public function setCacheImpl($cacheImpl) {
         $this->cacheImpl = $cacheImpl;
     }
 
