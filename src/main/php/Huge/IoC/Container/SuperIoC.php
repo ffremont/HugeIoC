@@ -405,19 +405,26 @@ abstract class SuperIoC implements IContainer {
         return $definitions;
     }
 
-    public final function addDefinitions($definitions) {
-        $cacheKey = md5(self::whoAmI() . json_encode(array_keys($definitions)) . $this->name. $this->version . __FUNCTION__);
-        if ($this->cacheImpl !== null) {
-            $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
-            if ($cacheDefinitions !== FALSE) {
-                $definitions = $cacheDefinitions;
-                $this->logger->debug('from cache : définitions à ajouter du conteneur');
+    /**
+     * 
+     * @param array $definitions
+     * @param boolean $cacheable permet de mettre en cache les définitions (attention si vous utilisez des variables au RUN)
+     */
+    public final function addDefinitions($definitions, $cacheable = false) {
+        if($cacheable){
+            $cacheKey = md5(self::whoAmI() . json_encode(array_keys($definitions)) . $this->name. $this->version . __FUNCTION__);
+            if ($this->cacheImpl !== null) {
+                $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
+                if ($cacheDefinitions !== FALSE) {
+                    $definitions = $cacheDefinitions;
+                    $this->logger->debug('from cache : définitions à ajouter du conteneur');
+                }
             }
         }
 
         $definitions = $this->_normalizeDefinitions($definitions);
 
-        if ($this->cacheImpl !== null) {
+        if ($cacheable && ($this->cacheImpl !== null)) {
             $this->cacheImpl->save($cacheKey, $definitions);
         }
 
