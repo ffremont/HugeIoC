@@ -14,7 +14,7 @@ Le principe de cette librairie est de gérer les instances des objets PHP à vot
     }
 ```
 * Cache : https://github.com/doctrine/cache
-
+* Initialisation 
 ```php
   $loader = require(__DIR__.'/../../../vendor/autoload.php');
   
@@ -66,7 +66,7 @@ Le principe de cette librairie est de gérer les instances des objets PHP à vot
     }
 ```
 * Attention, il est nécessaire de mettre à jour la version en cas de relivraison (rafraîchissement du cache)
-* 
+
 ## Factories
 1. Créer vos factories : implémenter Huge\IoC\Factory\IFactory
 ```php
