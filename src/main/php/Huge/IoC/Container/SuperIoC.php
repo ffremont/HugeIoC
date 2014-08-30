@@ -55,7 +55,7 @@ abstract class SuperIoC implements IContainer {
      * @var string
      */
     protected $version;
-    
+
     /**
      * Nom du composant
      * 
@@ -95,7 +95,7 @@ abstract class SuperIoC implements IContainer {
      * @return array|null
      */
     public final function getDefinitionById($id) {
-        $cacheKey = md5(self::whoAmI() . $this->name. $this->version .$id. __FUNCTION__);
+        $cacheKey = md5(self::whoAmI() . $this->name . $this->version . $id . __FUNCTION__);
         if ($this->cacheImpl !== null) {
             $def = $this->cacheImpl->fetch($cacheKey);
             if ($def !== FALSE) {
@@ -104,11 +104,11 @@ abstract class SuperIoC implements IContainer {
             }
         }
         $this->logger->debug('refresh : getDefinitionById');
-        
+
         $definition = isset($this->definitions[$id]) ? $this->definitions[$id] : null;
         if ($definition === null) {
             $iocCount = count($this->otherContainers);
-            for($i = 0; $i < $iocCount; $i++){
+            for ($i = 0; $i < $iocCount; $i++) {
                 $def = $this->otherContainers[$i]->getDefinitionById($id);
                 if ($def !== null) {
                     $definition = $def;
@@ -116,7 +116,7 @@ abstract class SuperIoC implements IContainer {
                 }
             }
         }
-        
+
         if ($this->cacheImpl !== null) {
             $this->cacheImpl->save($cacheKey, $definition);
         }
@@ -135,12 +135,12 @@ abstract class SuperIoC implements IContainer {
         if (isset($this->beans[$id])) {
             return;
         }
-        
+
         $this->beans[$id] = $definition['factory']->create($definition['class']);
 
         $deps = isset($this->deps[$id]) ? $this->deps[$id] : array();
         $depsCount = count($deps);
-        for($i = 0; $i < $depsCount; $i++){
+        for ($i = 0; $i < $depsCount; $i++) {
             $aDep = $deps[$i];
             $def = $this->getDefinitionById($aDep['ref']);
             if ($def === null) {
@@ -149,15 +149,14 @@ abstract class SuperIoC implements IContainer {
                 if ($countImpl === 1) {
                     $def = $this->getDefinitionById($implBeans[0]);
                 } else if ($countImpl > 1) {
-                    throw new InvalidBeanException($id, 'Multi implémentation pour une interface : '.$aDep['ref'], 1);
+                    throw new InvalidBeanException($id, 'Multi implémentation pour une interface : ' . $aDep['ref'], 1);
                 } else {
                     $subClasses = $this->findBeansBySubClass($aDep['ref']);
                     $countSubClasses = count($subClasses);
                     if ($countSubClasses === 1) {
                         $def = $this->getDefinitionById($subClasses[0]);
-                        
                     } else if ($countSubClasses > 1) {
-                        throw new InvalidBeanException($id, 'Multi sous classe pour une interface : '.$aDep['ref'], 1);
+                        throw new InvalidBeanException($id, 'Multi sous classe pour une interface : ' . $aDep['ref'], 1);
                     }
                 }
             }
@@ -179,8 +178,8 @@ abstract class SuperIoC implements IContainer {
     private function _loadBeans($scope) {
         $keys = array_keys($this->definitions);
         $keyCount = count($keys);
-        for($i = 0; $i < $keyCount; $i++){
-            $definition = $this->definitions[ $keys[$i] ];
+        for ($i = 0; $i < $keyCount; $i++) {
+            $definition = $this->definitions[$keys[$i]];
             if (isset($definition['factory']) && ($definition['factory']->getScope() === $scope)) {
                 $this->_loadBean($definition);
             }
@@ -191,7 +190,7 @@ abstract class SuperIoC implements IContainer {
      * Charge les dépendances (toutes les définitions)
      */
     private function _loadDeps() {
-        $cacheKey = md5(self::whoAmI() . $this->name. $this->version . __FUNCTION__);
+        $cacheKey = md5(self::whoAmI() . $this->name . $this->version . __FUNCTION__);
         if ($this->cacheImpl !== null) {
             $deps = $this->cacheImpl->fetch($cacheKey);
             if ($deps !== FALSE) {
@@ -284,7 +283,7 @@ abstract class SuperIoC implements IContainer {
      * @return object|null
      * @throws \Huge\IoC\Exceptions\InvalidBeanException s'il existe plusieurs implémentation d'une interface / sous classe à injecter
      */
-     public final function getBean($id) {
+    public final function getBean($id) {
         $id = trim($id, '\\');
 
         if (isset($this->beans[$id])) {
@@ -299,22 +298,22 @@ abstract class SuperIoC implements IContainer {
 
         // recherche du bean en tant qu'interface
         $implBeans = $this->findBeansByImpl($id);
-        if(count($implBeans) === 1){
+        if (count($implBeans) === 1) {
             return $this->getBean($implBeans[0]);
-        }else{
-            $this->logger->warning('Double implémentation de "'.$id.'"');
+        } else {
+            $this->logger->warning('Double implémentation de "' . $id . '"');
             return null;
         }
-        
+
         // recherche du bean en tant que classe parente
         $subClassBeans = $this->findBeansBySubClass($id);
-        if(count($subClassBeans) === 1){
+        if (count($subClassBeans) === 1) {
             return $this->getBean($subClassBeans[0]);
-        }else{
-            $this->logger->warning('2 sous classe de "'.$id.'" sous définies');
+        } else {
+            $this->logger->warning('2 sous classe de "' . $id . '" sous définies');
             return null;
         }
-        
+
         return null;
     }
 
@@ -325,7 +324,7 @@ abstract class SuperIoC implements IContainer {
      * @return array liste des ID des beans implémentant d'interface
      */
     public final function findBeansByImpl($implClassName) {
-        $cacheKey = md5(self::whoAmI() . $this->name. $this->version . $implClassName . 'findByImpl');
+        $cacheKey = md5(self::whoAmI() . $this->name . $this->version . $implClassName . 'findByImpl');
         if ($this->cacheImpl !== null) {
             $beans = $this->cacheImpl->fetch($cacheKey);
             if ($beans !== FALSE) {
@@ -355,7 +354,7 @@ abstract class SuperIoC implements IContainer {
      * @return array liste de identifiants des beans
      */
     public final function findBeansBySubClass($parentClass) {
-        $cacheKey = md5(self::whoAmI() . $this->name. $this->version . $parentClass . 'findBeansBySubClass');
+        $cacheKey = md5(self::whoAmI() . $this->name . $this->version . $parentClass . 'findBeansBySubClass');
         if ($this->cacheImpl !== null) {
             $beans = $this->cacheImpl->fetch($cacheKey);
             if ($beans !== FALSE) {
@@ -389,19 +388,19 @@ abstract class SuperIoC implements IContainer {
     public function getDefinitions() {
         return $this->definitions;
     }
-    
+
     /**
      * 
      * @return array
      */
-    public function getAllDefinitions(){
+    public function getAllDefinitions() {
         $definitions = $this->definitions;
-        
+
         /* @var $ioc \Huge\IoC\Container\SuperIoC */
-        foreach($this->otherContainers as $ioc){
+        foreach ($this->otherContainers as $ioc) {
             $definitions = array_merge($definitions, $ioc->getAllDefinitions());
         }
-        
+
         return $definitions;
     }
 
@@ -410,21 +409,20 @@ abstract class SuperIoC implements IContainer {
      * @param array $definitions
      * @param boolean $cacheable permet de mettre en cache les définitions (attention si vous utilisez des variables au RUN)
      */
-    public final function addDefinitions($definitions, $cacheable = false) {
-        if($cacheable){
-            $cacheKey = md5(self::whoAmI() . json_encode(array_keys($definitions)) . $this->name. $this->version . __FUNCTION__);
-            if ($this->cacheImpl !== null) {
-                $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
-                if ($cacheDefinitions !== FALSE) {
-                    $definitions = $cacheDefinitions;
-                    $this->logger->debug('from cache : définitions à ajouter du conteneur');
-                }
+    public final function addDefinitions($definitions) {
+        $cacheKey = md5(self::whoAmI() . json_encode($definitions) . $this->name . $this->version . __FUNCTION__);
+        if ($this->cacheImpl !== null) {
+            $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
+            if ($cacheDefinitions !== FALSE) {
+                $definitions = $cacheDefinitions;
+                $this->logger->debug('from cache : définitions à ajouter du conteneur');
             }
         }
 
+
         $definitions = $this->_normalizeDefinitions($definitions);
 
-        if ($cacheable && ($this->cacheImpl !== null)) {
+        if ($this->cacheImpl !== null) {
             $this->cacheImpl->save($cacheKey, $definitions);
         }
 
@@ -434,20 +432,20 @@ abstract class SuperIoC implements IContainer {
     public function getOtherContainers() {
         return $this->otherContainers;
     }
-    
+
     /**
      * Retourne tous les conteneurs ioc
      * 
      * @return array
      */
-    public function getAllOtherContainers(){
+    public function getAllOtherContainers() {
         $containers = array();
-        
+
         /* @var $ioc \Huge\IoC\Container\SuperIoC */
-        foreach($this->otherContainers as $ioc){
+        foreach ($this->otherContainers as $ioc) {
             $containers = array_merge($containers, $ioc->getAllOtherContainers());
         }
-        
+
         return $containers;
     }
 
@@ -459,7 +457,7 @@ abstract class SuperIoC implements IContainer {
     public function addOtherContainers($otherContainers) {
         $list = array();
         $iocCount = count($otherContainers);
-        for($i=0; $i < $iocCount; $i++){
+        for ($i = 0; $i < $iocCount; $i++) {
             $ioc = $otherContainers[$i];
             if ($ioc instanceof SuperIoC) {
                 $ioc->setCacheImpl(null);
@@ -490,7 +488,7 @@ abstract class SuperIoC implements IContainer {
     public function setVersion($version) {
         $this->version = $version;
     }
-    
+
     public function getLogger() {
         return $this->logger;
     }
@@ -498,9 +496,9 @@ abstract class SuperIoC implements IContainer {
     public function setLogger(\Psr\Log\LoggerInterface $logger) {
         $this->logger = $logger;
     }
-    
+
     public function getName() {
         return $this->name;
     }
-}
 
+}
