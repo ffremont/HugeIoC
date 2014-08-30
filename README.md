@@ -148,11 +148,6 @@ Utilisation des implémentations Doctrine\Common\Cache\Cache
     $c->setCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
 ```
 
-Mettre en cache mes définitions de beans, par défaut "false". Attention si vous utilisez des variables aux RUN, car elles seront cachées.
-```php
-$ioc->addDefinitions($definitions, true);
-```
-
 ## Logger
 1. Implémentation du composant factory : Huge\IoC\Factory\ILogFactory
 ```php
