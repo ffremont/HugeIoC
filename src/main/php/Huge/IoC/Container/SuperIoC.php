@@ -205,7 +205,8 @@ abstract class SuperIoC implements IContainer {
      *  @return array
      */
     private function _normalizeDefinitions() {
-        $cacheKey = md5(self::whoAmI(). $this->name . $this->version . __FUNCTION__);
+        $currentClassName = self::whoAmI();
+        $cacheKey = md5($currentClassName. $this->name . $this->version . __FUNCTION__);
         if ($this->cacheImpl !== null) {
             $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
             if ($cacheDefinitions !== FALSE) {
@@ -222,7 +223,7 @@ abstract class SuperIoC implements IContainer {
                 $definition['id'] = $definition['class'];
             }
 
-            if (!isset($definition['factory']) || !($definition['factory'] instanceof IFactory)) {
+            if (($currentClassName !== $definition['class']) && (!isset($definition['factory']) || !($definition['factory'] instanceof IFactory))) {
                 $this->logger->warning('Factory du bean invalide : ' . $definition['class']);
                 continue;
             }

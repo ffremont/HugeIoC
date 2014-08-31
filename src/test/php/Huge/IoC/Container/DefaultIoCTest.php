@@ -37,6 +37,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
         $c->start();
         $this->assertNotNull($c->getBean('contact'));
         $this->assertNotNull($c->getBean('client'));
+        $this->assertNotNull($c->getBean('Huge\IoC\Container\DefaultIoC'));
         
         $cc = new DefaultIoC('b');
         $cc->setCacheImpl($cache);
