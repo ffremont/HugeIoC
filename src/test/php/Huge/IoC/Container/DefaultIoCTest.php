@@ -64,6 +64,8 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
                 'factory' => SimpleFactory::getInstance()
             )
         ));
+        $this->assertNotEmpty($c1->getDefinitions());
+        
         $c2 = new DefaultIoC();
         // ioc contenant l'impl. de l'interface
         $c2->addDefinitions(array(
@@ -72,6 +74,8 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
                 'factory' => SimpleFactory::getInstance()
             )
         ));
+        $this->assertNotEmpty($c2->getDefinitions());
+        
         $c1->addOtherContainers(array($c2));
         $c1->start();
         
