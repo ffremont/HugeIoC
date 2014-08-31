@@ -4,7 +4,7 @@
         <layout class="LoggerLayoutPattern">
             <param name="conversionPattern" value="%date{Y-m-d H:i} - %logger %-5level : [%X{requestid}-%X{accesid}] %msg%n%ex" />
         </layout>
-        <param name="file" value="target/trace.log" />
+        <param name="file" value="/var/log/apps/hugeIoC/hugeIoC.test.log" />
         <param name="maxFileSize" value="1MB" />
         <param name="maxBackupIndex" value="5" />
     </appender>
