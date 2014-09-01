@@ -81,7 +81,7 @@ abstract class SuperIoC implements IContainer {
             )
         );
         $this->otherContainers = array();
-        $this->beans = array(self::whoAmI() => $this);
+        $this->beans = array($class => $this);
         $this->deps = array();
         $this->cacheImpl = null;
         $this->logger = new NullLogger();
@@ -223,9 +223,11 @@ abstract class SuperIoC implements IContainer {
                 $definition['id'] = $definition['class'];
             }
 
-            if (($currentClassName !== $definition['class']) && (!isset($definition['factory']) || !($definition['factory'] instanceof IFactory))) {
-                $this->logger->warning('Factory du bean invalide : ' . $definition['class']);
-                continue;
+            if ((!isset($definition['factory']) || !($definition['factory'] instanceof IFactory))) {
+                if(!isset($this->beans[$definition['id']])){
+                    $this->logger->warning('Factory du bean invalide : ' . $definition['class']);
+                    continue;
+                }
             }
 
             $RClass = new \ReflectionClass($definition['class']);
