@@ -169,11 +169,9 @@ abstract class SuperIoC implements IContainer {
             $deps = $this->cacheImpl->fetch($cacheKey);
             if ($deps !== FALSE) {
                 $this->deps = $deps;
-                $this->logger->debug('from cache : dépendances des beans');
                 return;
             }
         }
-        $this->logger->debug('refresh : dépendances des beans');
 
         $annotationReader = new AnnotationReader();
         foreach ($this->definitions as $definition) {
