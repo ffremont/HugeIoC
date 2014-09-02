@@ -147,6 +147,7 @@ Utilisation des implémentations Doctrine\Common\Cache\Cache
     $c = new DefaultIoC('default', '1.0');
     $c->setCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
 ```
+Attention, les définitions des beans est mise en cache, par conséquent, les paramètres donnés au RUN le sont aussi.
 
 ## Logger
 1. Implémentation du composant factory : Huge\IoC\Factory\ILogFactory
