@@ -68,20 +68,27 @@ abstract class SuperIoC implements IContainer {
      * @var \Psr\Log\LoggerInterface
      */
     private $logger;
+    
+    /**
+     * Nom de la classe fille
+     * 
+     * @var string
+     */
+    protected $childClassName;
 
     public function __construct($name = '', $version = '') {
         $this->name = $name;
         $this->version = $version;
-        $class = self::whoAmI();
+        $this->childClassName = self::whoAmI();
         $this->definitions = array(
-            $class => array(
-                'id' => $class,
-                'class' => $class,
+            $this->childClassName => array(
+                'id' => $this->childClassName,
+                'class' => $this->childClassName,
                 'factory' => null
             )
         );
         $this->otherContainers = array();
-        $this->beans = array($class => $this);
+        $this->beans = array($this->childClassName => $this);
         $this->deps = array();
         $this->cacheImpl = null;
         $this->logger = new NullLogger();
@@ -164,7 +171,7 @@ abstract class SuperIoC implements IContainer {
      * Charge les dépendances (toutes les définitions)
      */
     private function _loadDeps() {
-        $cacheKey = md5(self::whoAmI() . $this->name . $this->version . __FUNCTION__);
+        $cacheKey = md5($this->childClassName . $this->name . $this->version . __FUNCTION__);
         if ($this->cacheImpl !== null) {
             $deps = $this->cacheImpl->fetch($cacheKey);
             if ($deps !== FALSE) {
@@ -203,8 +210,7 @@ abstract class SuperIoC implements IContainer {
      *  @return array
      */
     private function _normalizeDefinitions() {
-        $currentClassName = self::whoAmI();
-        $cacheKey = md5($currentClassName. $this->name . $this->version . __FUNCTION__);
+        $cacheKey = md5($this->childClassName. $this->name . $this->version . __FUNCTION__);
         if ($this->cacheImpl !== null) {
             $cacheDefinitions = $this->cacheImpl->fetch($cacheKey);
             if ($cacheDefinitions !== FALSE) {
@@ -309,7 +315,7 @@ abstract class SuperIoC implements IContainer {
      * @return array liste des ID des beans implémentant d'interface
      */
     public final function findBeansByImpl($implClassName) {
-        $cacheKey = md5(self::whoAmI() . $this->name . $this->version . $implClassName . 'findByImpl');
+        $cacheKey = md5($this->childClassName . $this->name . $this->version . $implClassName . 'findByImpl');
         if ($this->cacheImpl !== null) {
             $beans = $this->cacheImpl->fetch($cacheKey);
             if ($beans !== FALSE) {
@@ -338,7 +344,7 @@ abstract class SuperIoC implements IContainer {
      * @return array liste de identifiants des beans
      */
     public final function findBeansBySubClass($parentClass) {
-        $cacheKey = md5(self::whoAmI() . $this->name . $this->version . $parentClass . 'findBeansBySubClass');
+        $cacheKey = md5($this->childClassName . $this->name . $this->version . $parentClass . 'findBeansBySubClass');
         if ($this->cacheImpl !== null) {
             $beans = $this->cacheImpl->fetch($cacheKey);
             if ($beans !== FALSE) {
