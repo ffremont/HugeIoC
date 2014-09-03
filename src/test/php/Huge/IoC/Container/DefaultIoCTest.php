@@ -31,7 +31,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
             array(
                 'id' => 'client',
                 'class' => '\Huge\IoC\Fixtures\Client',
-                'factory' =>  new ConstructFactory(array(new RefBean('contact', $c), '001'))
+                'factory' =>  new ConstructFactory(array(new RefBean('contact'), '001'))
             )
         ));
         $c->start();
@@ -156,7 +156,7 @@ class DefaultIoCTest extends \PHPUnit_Framework_TestCase {
             array(
                 'id' => 'client',
                 'class' => '\Huge\IoC\Fixtures\Client',
-                'factory' => new ConstructFactory(array(new RefBean('contact', $c), '001'))
+                'factory' => new ConstructFactory(array(new RefBean('contact'), '001'))
             )
         ));
         $c->start();

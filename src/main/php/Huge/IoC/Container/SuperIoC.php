@@ -117,7 +117,7 @@ abstract class SuperIoC implements IContainer {
             return;
         }
 
-        $this->beans[$id] = $definition['factory']->create($definition['class']);
+        $this->beans[$id] = $definition['factory']->create($this, $definition['class']);
 
         $deps = isset($this->deps[$id]) ? $this->deps[$id] : array();
         $depsCount = count($deps);

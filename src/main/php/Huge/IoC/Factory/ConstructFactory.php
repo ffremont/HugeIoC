@@ -15,12 +15,12 @@ class ConstructFactory implements IFactory {
         $this->args = $args;
     }
 
-    public function create($classname) {
+    public function create($ioc, $classname) {
         $bean = null;
         $values = array();
         foreach ($this->args as $arg) {
             if ($arg instanceof RefBean) {
-                $values[] = $arg->getBean();
+                $values[] = $arg->getBean($ioc);
             } else {
                 $values[] = $arg;
             }
